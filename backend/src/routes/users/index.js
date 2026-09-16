@@ -1,8 +1,8 @@
 const { Router } = require('express')
-const userRouter = require('../routes/users')
+const User = require('../../controllers/users')
 
 const router = Router()
 
-router.use('/helpme.ba', userRouter)
+router.post('/signup', User.createUser)
 
 module.exports = router
