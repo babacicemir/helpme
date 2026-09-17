@@ -22,6 +22,38 @@ const createUser = async (req, res) => {
     }
 }
 
+const login = async (req, res) => {
+    try {
+        const token = await accountService.login(req.body);
+
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 2 * 60 * 60 * 1000
+        });
+
+        return res.status(200).json({
+            message: 'Login successful'
+        });
+
+    } catch (error) {
+        if (error.message === 'INVALID_CREDENTIALS') {
+            return res.status(401).json({
+                error: 'Invalid username/email or password'
+            });
+        }
+
+        console.error(error);
+
+        return res.status(500).json({
+            error: 'Internal server error'
+        });
+    }
+};
+
+
 module.exports = {
-    createUser
+    createUser,
+    login
 }
