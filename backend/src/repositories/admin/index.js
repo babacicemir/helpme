@@ -47,8 +47,62 @@ const getAllJobs = async() => {
     return result.rows
 }
 
+const deleteJob = async(id) => {
+    const query = 'DELETE FROM jobs WHERE id=$1 RETURNING *'
+    const values = [id]
+    const result = await pool.query(query, values)
+    return result.rows[0] 
+}
+
+const getAllServices = async() => {
+    const query = `
+    SELECT
+        u.id,
+        u.first_name,
+        u.last_name,
+        u.username,
+        u.email,
+        u.location AS user_location,
+
+        s.id AS service_id,
+        s.title,
+        s.description AS service_description,
+        s.price,
+        s.delivery_days,
+        s.status,
+        s.created_at AS service_created_at,
+        s.updated_at AS service_updated_at,
+
+        c.id AS category_id,
+        c.name AS category,
+        c.description AS category_description
+
+    FROM users_db AS u
+    JOIN services AS s
+        ON u.id = s.user_id
+    JOIN categories AS c
+        ON s.category_id = c.id
+
+    WHERE u.deleted_at IS NULL
+
+    ORDER BY s.created_at DESC
+    `
+    const result = await pool.query(query)
+    return result.rows
+}
+
+const deleteService = async(id) => {
+    const query = 'DELETE FROM services WHERE id=$1 RETURNING *'
+    const values = [id]
+    const result = await pool.query(query, values)
+    return result.rows[0]
+}
+
 module.exports = {
     getAllUsers, 
     deleteUser,
-    getAllJobs
+    getAllJobs,
+    deleteJob,
+    getAllServices,
+    deleteService
 }
