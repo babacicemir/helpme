@@ -101,6 +101,40 @@ const updateCategory = async (id, categoryData) => {
     return updatedCategory
 }
 
+const getAllReports = async() => {
+    
+    const reports = await adminRepository.getAllReports()
+    return reports
+
+}
+
+const blockUser = async(userId) => {
+    const user = await adminRepository.blockUser(userId)
+    if(!user){
+        const error = new Error('User not found!')
+        error.statusCode = 404
+        throw error
+    }
+    return user
+}
+
+
+const unBlockUser = async(userId) => {
+    const user = await adminRepository.unBlockUser(userId)
+    if(!user){
+        const error = new Error('User not found!')
+        error.statusCode = 404
+        throw error
+    }
+    return user
+}
+
+const getBlockedUsers = async () => {
+    const blockedUsers = await adminRepository.getBlockedUsers()
+
+    return blockedUsers
+}
+
 module.exports={
     getAllUsers,
     deleteUser,
@@ -110,5 +144,9 @@ module.exports={
     deleteService,
     addCategory,
     deleteCategory,
-    updateCategory
+    updateCategory,
+    getAllReports,
+    blockUser ,
+    unBlockUser,
+    getBlockedUsers
 }

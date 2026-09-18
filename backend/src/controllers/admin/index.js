@@ -119,7 +119,6 @@ const updateCategory = async(req, res, next) => {
     try{
         const id = req.params.id
         const categoryData = req.body
-        console.log(id, categoryData)
 
         const updatedCategory = await adminService.updateCategory(id, categoryData)
 
@@ -130,6 +129,65 @@ const updateCategory = async(req, res, next) => {
         })
 
     }catch(error){
+        next(error)
+    }
+}
+
+const getAllReports = async(req, res, next) => {
+    try{
+        const reports = await adminService.getAllReports()
+        return res.status(200).json({
+            success: true,
+            data: reports
+        })
+
+    }catch(error){
+        next(error)
+    }
+}
+
+const blockUser = async (req, res, next) => {
+    try {
+        const { id } = req.params
+
+        const user = await adminService.blockUser(id)
+
+        return res.status(200).json({
+            success: true,
+            message: 'User blocked successfully',
+            data: user,
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+const unBlockUser = async (req, res, next) => {
+    try {
+        const { id } = req.params
+
+        const user = await adminService.unBlockUser(id)
+
+        return res.status(200).json({
+            success: true,
+            message: 'User unblocked successfully',
+            data: user,
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+const getBlockedUsers = async (req, res, next) => {
+    try {
+        const blockedUsers = await adminService.getBlockedUsers()
+
+        return res.status(200).json({
+            success: true,
+            message: 'Blocked users retrieved successfully',
+            data: blockedUsers,
+        })
+    } catch (error) {
         next(error)
     }
 }
@@ -145,5 +203,9 @@ module.exports = {
     deleteService,
     addCategory,
     deleteCategory,
-    updateCategory
+    updateCategory,
+    getAllReports,
+    blockUser,
+    unBlockUser,
+    getBlockedUsers
 }

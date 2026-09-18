@@ -128,6 +128,99 @@ const updateCategory = async(categoryData, id) => {
     return result.rows[0]
 }
 
+const getAllReports = async() => {
+    const query = `
+        SELECT
+            r.id AS report_id,
+            reporter.id AS reporter_id,
+            reporter.username AS reporter_username,
+            r.reported_user_id,
+            reported_user.username AS reported_username,
+            r.reported_job_id,
+            j.title AS job_title,
+            r.reported_service_id,
+            s.title AS service_title,
+            rr.id AS reason_id,
+            rr.name AS reason,
+            r.description,
+            r.evidence_image,
+            r.status,
+            r.action,
+            r.created_at,
+            r.updated_at
+        FROM reports_helpme AS r
+
+        JOIN users_db AS reporter
+            ON r.reporter_id = reporter.id
+
+        LEFT JOIN users_db AS reported_user
+            ON r.reported_user_id = reported_user.id
+
+        LEFT JOIN jobs AS j
+            ON r.reported_job_id = j.id
+
+        LEFT JOIN services AS s
+            ON r.reported_service_id = s.id
+
+        JOIN report_reasons AS rr
+            ON r.reason_id = rr.id
+
+        ORDER BY r.created_at DESC
+    `
+
+    const result = await pool.query(query)
+
+    return result.rows
+}
+
+const blockUser = async(userId) => {
+    const query = 'UPDATE users_db SET is_blocked=TRUE WHERE id=$1 AND deleted_at IS NULL RETURNING*'
+    const values = [userId]
+    const result = await pool.query(query, values)
+    return result.rows[0]
+}
+
+const unBlockUser = async(userId) => {
+    const query = 'UPDATE users_db SET is_blocked=FALSE WHERE id=$1 AND deleted_at IS NULL RETURNING*'
+    const values = [userId]
+    const result = await pool.query(query, values)
+    return result.rows[0]
+}
+
+const getBlockedUsers = async () => {
+    const query = `
+        SELECT
+            b.id AS blocked_user_id,
+
+            u.id AS user_id,
+            u.username,
+            u.email,
+            u.first_name,
+            u.last_name,
+
+            r.id AS reason_id,
+            r.name AS reason,
+
+            b.message,
+            b.blocked_at,
+            b.unblocked_at
+
+        FROM blocked_users AS b
+
+        JOIN users_db AS u
+            ON b.user_id = u.id
+
+        JOIN report_reasons AS r
+            ON b.reason_id = r.id
+
+        ORDER BY b.blocked_at DESC
+    `
+
+    const result = await pool.query(query)
+
+    return result.rows
+}
+
 module.exports = {
     getAllUsers, 
     deleteUser,
@@ -138,5 +231,9 @@ module.exports = {
     addCategory,
     findCategory,
     deleteCategory,
-    updateCategory
+    updateCategory,
+    getAllReports,
+    blockUser,
+    unBlockUser,
+    getBlockedUsers
 }
