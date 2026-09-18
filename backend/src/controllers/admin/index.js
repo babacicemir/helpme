@@ -85,6 +85,55 @@ const deleteService = async(req, res, next) => {
     }
 }
 
+const addCategory = async(req, res, next) => {
+    try{
+        const categoryData = req.body
+        const addedCategory = await adminService.addCategory(categoryData)
+        return res.status(201).json({
+            success: true,
+            message: 'Category added successfully!',
+            data: addedCategory
+        })
+
+    }catch(error){
+        next(error)
+    }
+}
+
+const deleteCategory = async(req, res, next) => {
+    try{
+        const id = req.params.id
+        const deletedCategory = await adminService.deleteCategory(id)
+        return res.status(200).json({
+            success: true,
+            message: 'Category deleted successfully',
+            data: deletedCategory,
+        })
+    }
+    catch(error) {
+        next(error)
+    }
+}
+
+const updateCategory = async(req, res, next) => {
+    try{
+        const id = req.params.id
+        const categoryData = req.body
+        console.log(id, categoryData)
+
+        const updatedCategory = await adminService.updateCategory(id, categoryData)
+
+        return res.status(200).json({
+            success: true,
+            message: 'Category updated successfully',
+            data: updatedCategory,
+        })
+
+    }catch(error){
+        next(error)
+    }
+}
+
 
 
 module.exports = {
@@ -93,5 +142,8 @@ module.exports = {
     getAllJobs,
     deleteJob,
     getAllServices,
-    deleteService
+    deleteService,
+    addCategory,
+    deleteCategory,
+    updateCategory
 }

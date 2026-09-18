@@ -57,11 +57,58 @@ const deleteService = async(id) => {
     return deletedService
 }
 
+const addCategory = async(categoryData) => {
+
+    const existingCategory = await adminRepository.findCategory(categoryData.name)
+    if(existingCategory){
+        const error = new Error('Category already exists')
+        error.statusCode = 409
+        throw error
+    }
+    const addedCategory = await adminRepository.addCategory(categoryData)
+    return addedCategory
+}
+
+const deleteCategory = async(id) => {
+    const deletedCategory = await adminRepository.deleteCategory(id)
+    if(!deletedCategory){
+        const error = new Error('Category not found!')
+        error.statusCode = 404
+        throw error
+    }
+    return deletedCategory
+}
+
+const updateCategory = async (id, categoryData) => {
+    const existingCategory = await adminRepository.findCategory(categoryData.name)
+
+    if (existingCategory && existingCategory.id !== Number(id)) {
+        const error = new Error('Category already exists')
+        error.statusCode = 409
+
+        throw error
+    }
+
+    const updatedCategory = await adminRepository.updateCategory(categoryData, id)
+
+    if (!updatedCategory) {
+        const error = new Error('Category not found!')
+        error.statusCode = 404
+
+        throw error
+    }
+
+    return updatedCategory
+}
+
 module.exports={
     getAllUsers,
     deleteUser,
     getAllJobs,
     deleteJob,
     getAllServices,
-    deleteService
+    deleteService,
+    addCategory,
+    deleteCategory,
+    updateCategory
 }

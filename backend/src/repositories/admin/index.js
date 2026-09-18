@@ -98,11 +98,45 @@ const deleteService = async(id) => {
     return result.rows[0]
 }
 
+const addCategory = async(categoryData) => {
+    const query = 'INSERT INTO categories(name, description) VALUES ($1, $2) RETURNING *'
+    const values = [categoryData.name, categoryData.description]
+    const result = await pool.query(query, values)
+
+    return result.rows[0]
+}
+
+const findCategory = async(name) => {
+    const query='SELECT * FROM categories WHERE name = $1'
+    const values=[name]
+    const result = await pool.query(query, values)
+
+    return result.rows[0]
+}
+
+const deleteCategory = async(id) => {
+    const query = 'DELETE FROM categories WHERE id=$1 RETURNING*'
+    const values = [id]
+    const result = await pool.query(query, values)
+    return result.rows[0]
+}
+
+const updateCategory = async(categoryData, id) => {
+    const query = 'UPDATE categories SET name = COALESCE($1, name), description=COALESCE($2, description) WHERE id=$3 RETURNING*'
+    const values = [categoryData.name, categoryData.description, id]
+    const result = await pool.query(query, values)
+    return result.rows[0]
+}
+
 module.exports = {
     getAllUsers, 
     deleteUser,
     getAllJobs,
     deleteJob,
     getAllServices,
-    deleteService
+    deleteService,
+    addCategory,
+    findCategory,
+    deleteCategory,
+    updateCategory
 }
