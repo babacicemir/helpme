@@ -1,4 +1,5 @@
 const accountService = require('../../services/index')
+const userService = require('../../services/users')
 
 const createUser = async (req, res) => {
     try {
@@ -52,8 +53,49 @@ const login = async (req, res) => {
     }
 };
 
+const createJob = async(req, res, next) => {
+    try{
+        const jobData = {
+            categoryId: req.body.categoryId,
+            title: req.body.title,
+            description: req.body.description,
+            budget: req.body.budget,
+            deadline: req.body.deadline,
+            location: req.body.location
+        }
+
+        const createdJob = await userService.createJob(req.user.id, jobData)
+
+        return res.status(201).json({
+            success: true,
+            message: 'Job created successfully',
+            data: createdJob
+        })
+    }
+    catch(error){
+        next(error)
+    }
+}
+
+const getUserJobs = async(req, res, next) => {
+    try{
+        const jobs = await userService.getUserJobs(req.user.id)
+        return res.status(200).json({
+            success: true,
+            message: 'Jobs successfully retrieved',
+            data: jobs
+        })
+
+    }
+    catch(error){
+        next(error)
+    }
+}
+
 
 module.exports = {
     createUser,
-    login
+    login,
+    createJob,
+    getUserJobs
 }
