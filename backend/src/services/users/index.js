@@ -82,6 +82,52 @@ const createMessage = async(jobId, senderId, message) => {
     return sendMessage
 }
 
+const updateMessage = async (messageId, userId, message) => {
+    const updatedMessage = await usersRepository.updateMessage(messageId, userId, message)
+     if (!updatedMessage) {
+        const error = new Error('Message not found or you are not the owner')
+        error.statusCode = 404
+        throw error
+    }
+    return updatedMessage
+}
+
+const deleteMessage = async (messageId, userId) => {
+    const deletedMessage = await usersRepository.deleteMessage(messageId, userId)
+
+    if (!deletedMessage) {
+        const error = new Error('Message not found or you are not the owner')
+        error.statusCode = 404
+        throw error
+    }
+
+    return deletedMessage
+}
+
+const getMessagesByJob = async(jobId) => {
+    const messages = await usersRepository.getMessagesByJob(jobId)
+    return messages
+}
+
+const createReplyMessage = async(messageId, userId, message) => {
+    const originalMessage = await usersRepository.getMessageById(messageId)
+    if (!originalMessage) {
+        const error = new Error('Message not found')
+        error.statusCode = 404
+        throw error
+    }
+
+    const messageData = {
+        jobId : originalMessage.job_id,
+        senderId : userId,
+        message,
+        parentMessageId: originalMessage.id 
+    }
+   
+    const reply = await usersRepository.createReplyMessage(messageData)
+    return reply
+}
+
 
 
 
@@ -93,5 +139,9 @@ module.exports = {
     acceptOffer,
     rejectOffer,
     deleteOffer,
-    createMessage
+    createMessage,
+    updateMessage,
+    deleteMessage,
+    getMessagesByJob,
+    createReplyMessage
 }

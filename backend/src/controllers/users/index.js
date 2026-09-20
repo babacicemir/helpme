@@ -191,6 +191,74 @@ const sendMessage = async(req, res, next) => {
     }
 }
 
+const updateMessage = async (req, res, next) => {
+    try {
+        const { id } = req.params
+        const userId = req.user.id
+        const message = req.body.message
+
+        const updatedMessage = await userService.updateMessage(id, userId, message)
+
+        return res.status(200).json({
+            success: true,
+            message: 'Message updated successfully',
+            data: updatedMessage,
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+
+const deleteMessage = async (req, res, next) => {
+    try {
+        const { id } = req.params
+        const userId = req.user.id
+
+        const deletedMessage = await userService.deleteMessage(id, userId)
+
+        return res.status(200).json({
+            success: true,
+            message: 'Message deleted successfully',
+            data: deletedMessage,
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+const getMessagesByJob = async(req, res, next) => {
+    try{ 
+        const { id } = req.params
+        const messages = await userService.getMessagesByJob(id)
+        return res.status(200).json({
+            success: true,
+            data: messages
+        })
+    }
+    catch(error){
+        next(error)
+    }
+}
+
+const createReplyToMessage = async(req, res, next) => {
+    try{
+        const { id } = req.params 
+        const userId = req.user.id
+        const message = req.body.message
+
+        const reply = await userService.createReplyMessage(id, userId, message)
+        
+        return res.status(201).json({
+            success: true,
+            message: 'Reply sent successfully',
+            data: reply,
+        })
+    }
+    catch(error){
+        next(error)
+    }
+}
 
 
 module.exports = {
@@ -203,5 +271,9 @@ module.exports = {
     acceptOffer,
     rejectOffer,
     deleteOffer,
-    sendMessage
+    sendMessage,
+    updateMessage,
+    deleteMessage,
+    getMessagesByJob,
+    createReplyToMessage
 }

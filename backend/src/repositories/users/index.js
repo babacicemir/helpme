@@ -134,6 +134,41 @@ const findJobById = async (jobId) => {
     return result.rows[0]
 }
 
+const updateMessage = async(messageId, userId, newMessage) => {
+    const query = 'UPDATE messages SET message=$1 WHERE id=$2 AND sender_id=$3 RETURNING*'
+    const values = [newMessage, messageId, userId]
+    const result = await pool.query(query, values)
+    return result.rows[0]
+}
+
+const deleteMessage = async(messageId, userId) => {
+    const query = 'DELETE FROM messages WHERE id=$1 AND sender_id=$2 RETURNING*'
+    const values = [messageId, userId]
+    const result = await pool.query(query, values)
+    return result.rows[0]
+}
+
+const getMessagesByJob = async(jobId) => {
+    const query = 'SELECT * FROM messages WHERE job_id=$1 ORDER BY id ASC'
+    const values = [jobId]
+    const result = await pool.query(query, values)
+    return result.rows
+}
+
+const getMessageById = async(id) => {
+    const query = 'SELECT * FROM MESSAGES WHERE id=$1'
+    const values = [id] 
+    const result = await pool.query(query, values)
+    return result.rows[0]
+}
+
+const createReplyMessage = async(messageData) => {
+    const query = 'INSERT INTO messages(job_id, sender_id, message, parent_message_id ) VALUES($1, $2, $3, $4) RETURNING*'
+    const values = [messageData.jobId, messageData.senderId, messageData.message, messageData.parentMessageId]
+    const result = await pool.query(query, values)
+    return result.rows[0]
+}
+
 module.exports = { 
     findUserByUsernameEmail,
     getAllUsers,
@@ -146,5 +181,11 @@ module.exports = {
     rejectOffer,
     deleteOffer,
     createMessage,
-    findJobById
+    findJobById,
+    updateMessage,
+    deleteMessage,
+    getMessagesByJob,
+    findJobById,
+    createReplyMessage,
+    getMessageById
 }

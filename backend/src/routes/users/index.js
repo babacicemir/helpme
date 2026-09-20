@@ -14,5 +14,9 @@ router.patch('/job/offer/accept/:id', chechJWT, User.acceptOffer)
 router.patch('/job/offer/reject/:id', chechJWT, User.rejectOffer)
 router.delete('/offer/:id', chechJWT, User.deleteOffer)
 router.post('/job/:id/message', chechJWT, User.sendMessage)
+router.patch('/message/:id', chechJWT, User.updateMessage)
+router.delete('/message/:id', chechJWT, User.deleteMessage)
+router.get('/job/:id/messages', chechJWT, User.getMessagesByJob)
+router.post('/message/:id/reply', chechJWT, User.createReplyToMessage)
 
 module.exports = router
