@@ -118,6 +118,39 @@ const deleteOffer = async(offerId, userId) => {
     return result.rows[0]
 }
 
+const sendOffer = async(offerData) => {
+    const query = 'INSERT INTO offers(job_id, user_id, price, delivery_days, message) VALUES ($1, $2, $3, $4, $5) RETURNING*'
+    const values = [offerData.jobId, offerData.userId, offerData.price, offerData.deliveryDays, offerData.message]
+    const result = await pool.query(query, values)
+    return result.rows[0]
+}
+
+const getMyOffers = async (userId) => {
+    const query = `
+        SELECT
+            o.id,
+            o.job_id,
+            j.title AS job_title,
+            j.description AS job_description,
+            o.price,
+            o.delivery_days,
+            o.message,
+            o.status,
+            o.created_at,
+            o.updated_at
+        FROM offers AS o
+        JOIN jobs AS j
+            ON o.job_id = j.id
+        WHERE o.user_id = $1
+        ORDER BY o.created_at DESC
+    `
+    const values = [userId]
+
+    const result = await pool.query(query, values)
+
+    return result.rows
+}
+
 const createMessage = async(messageData) => {
     const query = 'INSERT INTO messages(job_id, sender_id, message) VALUES($1, $2, $3) RETURNING*'
     const values = [messageData.jobId, messageData.senderId, messageData.message]
@@ -190,6 +223,13 @@ const getGivenReviews = async(id) => {
     return result.rows[0]
 }
 
+const getJobById = async(id) => {
+    const query = 'SELECT * from jobs WHERE id=$1'
+    const values = [id]
+    const result = await pool.query(query, values)
+    return result.rows[0]
+}
+
 
 
 
@@ -214,5 +254,8 @@ module.exports = {
     getMessageById,
     addReview,
     getReceivedReviews,
-    getGivenReviews
+    getGivenReviews,
+    sendOffer,
+    getJobById,
+    getMyOffers
 }

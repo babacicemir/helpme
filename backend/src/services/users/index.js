@@ -64,6 +64,43 @@ const deleteOffer = async(offerId, userId) => {
     return deletedOffer
 }
 
+const sendOffer = async(userId, jobId, offerData) => {
+    const user = await usersRepository.getUserById(userId)
+    if(!user){
+        const error = new Error('User not found')
+        error.statusCode = 404
+        throw error
+    }
+    const job = await usersRepository.getJobById(jobId)
+    if(!job){
+        const error = new Error('Job not found')
+        error.statusCode = 404
+        throw error
+    }
+
+    const data = {
+        jobId,
+        userId,
+        price: offerData.price,
+        deliveryDays: offerData.delivery_days,
+        message: offerData.message
+    }
+
+    const offer = await usersRepository.sendOffer(data)
+    return offer
+}
+
+const getUserOffers = async(id) => {
+    const user = await usersRepository.getUserById(id)
+    if (!user) {
+        const error = new Error('User not found')
+        error.statusCode = 404
+        throw error
+    }
+    const offers = await usersRepository.getMyOffers(id)
+    return offers
+}
+
 const createMessage = async(jobId, senderId, message) => {
     const job = await usersRepository.findJobById(jobId)
     if (!job) {
@@ -175,6 +212,7 @@ module.exports = {
     acceptOffer,
     rejectOffer,
     deleteOffer,
+    sendOffer,
     createMessage,
     updateMessage,
     deleteMessage,
@@ -182,5 +220,6 @@ module.exports = {
     createReplyMessage,
     addRating,
     getReceivedReviews,
-    getGivenReviews
+    getGivenReviews,
+    getUserOffers
 }

@@ -173,6 +173,38 @@ const deleteOffer = async (req, res, next) => {
     }
 }
 
+const sendOffer = async(req, res, next) => {
+    try{
+        const { id } = req.params 
+        const userId = req.user.id 
+        const offerData = req.body 
+
+        const offer = await userService.sendOffer(userId, id, offerData)
+        return res.status(201).json({
+            succes: true,
+            message: 'Offer successfully sent',
+            data: offer
+        })
+    }
+    catch(error){
+        next(error)
+    }
+}
+
+const getUserOffers = async(req, res, next) => {
+    try{
+        const userId = req.user.id 
+        const offers = await userService.getUserOffers(userId)
+        return res.status(200).json({
+            succes: true,
+            data: offers
+        })
+    }
+    catch(error){
+        next(error)
+    }
+}
+
 const sendMessage = async(req, res, next) => {
     try{
         const senderId = req.user.id 
@@ -323,5 +355,7 @@ module.exports = {
     createReplyToMessage,
     createReview,
     getAllReceivedReviews,
-    getAllGivenReviews
+    getAllGivenReviews,
+    sendOffer,
+    getUserOffers
 }

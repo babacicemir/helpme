@@ -23,7 +23,7 @@ const deleteUser = async(id) => {
 
 const getAllJobs = async() => {
 
-    const jobs = adminRepository.getAllJobs()
+    const jobs = await adminRepository.getAllJobs()
     return jobs
 
 }

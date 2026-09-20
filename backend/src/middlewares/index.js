@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken')
 const { getUserById } = require('../repositories/users')
 
-const chechJWT = async(req, res, next) => {
+const checkJWT = async(req, res, next) => {
     const token = req.cookies.token 
     if(!token){
         return res.status(401).json({error: "Missing token"})
@@ -24,5 +24,5 @@ const chechJWT = async(req, res, next) => {
 }
 
 module.exports = {
-    chechJWT
+    checkJWT
 }
