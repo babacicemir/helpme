@@ -128,6 +128,42 @@ const createReplyMessage = async(messageId, userId, message) => {
     return reply
 }
 
+const addRating = async(reviewerId, revieweeId, ratingData) => {
+    if(reviewerId === Number(revieweeId)){
+        const error = new Error('You cannot rate yourself')
+        error.statusCode = 400
+        throw error
+    }
+    const user = await usersRepository.getUserById(revieweeId)
+    if(!user){
+        const error = new Error('User not found')
+        error.statusCode = 404
+        throw error
+    }
+
+    const reviewData = {
+        reviewerId,
+        revieweeId,
+        rating: ratingData.rating,
+        comment: ratingData.comment
+    }
+
+    const rating = await usersRepository.addReview(reviewData)
+
+    return rating
+
+}
+
+const getReceivedReviews = async(id) => {
+    const reviews = await usersRepository.getReceivedReviews(id)
+    return reviews
+}
+
+const getGivenReviews = async(id) => {
+    const reviews = await usersRepository.getGivenReviews(id)
+    return reviews
+}
+
 
 
 
@@ -143,5 +179,8 @@ module.exports = {
     updateMessage,
     deleteMessage,
     getMessagesByJob,
-    createReplyMessage
+    createReplyMessage,
+    addRating,
+    getReceivedReviews,
+    getGivenReviews
 }

@@ -18,5 +18,9 @@ router.patch('/message/:id', chechJWT, User.updateMessage)
 router.delete('/message/:id', chechJWT, User.deleteMessage)
 router.get('/job/:id/messages', chechJWT, User.getMessagesByJob)
 router.post('/message/:id/reply', chechJWT, User.createReplyToMessage)
+router.post('/user/:userId/review', chechJWT, User.createReview)
+router.get('/user/reviews/received', chechJWT, User.getAllReceivedReviews)
+router.get('/user/reviews/given', chechJWT, User.getAllGivenReviews)
+
 
 module.exports = router

@@ -169,6 +169,30 @@ const createReplyMessage = async(messageData) => {
     return result.rows[0]
 }
 
+const addReview = async(reviewData) => {
+    const query = 'INSERT INTO reviews(reviewer_id, reviewee_id, rating, comment) VALUES($1, $2, $3, $4) RETURNING*'
+    const values = [reviewData.reviewerId, reviewData.revieweeId, reviewData.rating, reviewData.comment]
+    const result = await pool.query(query, values)
+    return result.rows[0]
+}
+
+const getReceivedReviews = async(id) => {
+    const query = 'SELECT r.id, r.reviewer_id, u.username, u.first_name, u.last_name, r.rating, r.comment, r.created_at FROM reviews AS r JOIN users_db AS u ON r.reviewer_id = u.id WHERE r.reviewee_id = $1 ORDER BY r.created_at DESC'
+    const values = [id]
+    const result = await pool.query(query, values)
+    return result.rows[0]
+}
+
+const getGivenReviews = async(id) => {
+    const query = 'SELECT r.id, r.reviewer_id, u.username, u.first_name, u.last_name, r.rating, r.comment, r.created_at FROM reviews AS r JOIN users_db AS u ON r.reviewee_id = u.id WHERE r.reviewer_id = $1 ORDER BY r.created_at DESC'
+    const values = [id]
+    const result = await pool.query(query, values)
+    return result.rows[0]
+}
+
+
+
+
 module.exports = { 
     findUserByUsernameEmail,
     getAllUsers,
@@ -187,5 +211,8 @@ module.exports = {
     getMessagesByJob,
     findJobById,
     createReplyMessage,
-    getMessageById
+    getMessageById,
+    addReview,
+    getReceivedReviews,
+    getGivenReviews
 }

@@ -260,6 +260,51 @@ const createReplyToMessage = async(req, res, next) => {
     }
 }
 
+const createReview = async (req, res, next) => {
+    try {
+        const reviewerId = req.user.id
+        const { userId } = req.params
+
+        const review = await userService.addRating(reviewerId, userId, req.body)
+
+        return res.status(201).json({
+            success: true,
+            message: 'Review created successfully',
+            data: review
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+const getAllReceivedReviews = async(req, res, next) => {
+    try{
+        const userId = req.user.id 
+        const reviews = await userService.getReceivedReviews(userId)
+        return res.status(200).json({
+            success: true,
+            data: reviews
+        })
+    }
+    catch(error){
+        next(error)
+    }
+}
+
+const getAllGivenReviews = async(req, res, next) => {
+    try{
+        const userId = req.user.id 
+        const reviews = await userService.getGivenReviews(userId)
+        return res.status(200).json({
+            success: true,
+            data: reviews
+        })
+    }
+    catch(error){
+        next(error)
+    }
+}
+
 
 module.exports = {
     createUser,
@@ -275,5 +320,8 @@ module.exports = {
     updateMessage,
     deleteMessage,
     getMessagesByJob,
-    createReplyToMessage
+    createReplyToMessage,
+    createReview,
+    getAllReceivedReviews,
+    getAllGivenReviews
 }
