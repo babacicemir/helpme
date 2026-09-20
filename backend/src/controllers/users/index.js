@@ -92,10 +92,116 @@ const getUserJobs = async(req, res, next) => {
     }
 }
 
+const deleteUsersJob = async(req, res, next) => {
+    try{
+        const jobId = req.params.id  
+        const job = await userService.deleteUsersJob(req.user.id, jobId)
+        return res.status(200).json({
+            success: true,
+            message: 'Job deleted successfully',
+            data: job
+        })
+    }
+    catch(error){
+        next(error)
+    }
+}
+
+const getAllOffers = async (req, res, next) => {
+
+    try {
+        const jobId = req.params.id  
+        const userId = req.user.id
+        const offers = await userService.getAllOffers(userId, jobId)
+
+        return res.status(200).json({
+            success: true,
+            data: offers,
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+const acceptOffer = async(req, res, next) => {
+    try{
+        const offerId = req.params.id 
+        const userId = req.user.id 
+        const accepedtOffer = await userService.acceptOffer(userId, offerId)
+
+        return res.status(201).json({
+            success: true,
+            message: 'Offer successfully accepted',
+            data: accepedtOffer
+        })
+    }
+    catch(error){
+        next(error)
+    }
+}
+
+const rejectOffer = async(req, res, next) => {
+    try{
+        const offerId = req.params.id 
+        const userId = req.user.id 
+        const rejectedOffer = await userService.rejectOffer(userId, offerId)
+
+        return res.status(201).json({
+            success: true,
+            message: 'Offer successfully rejected',
+            data: rejectedOffer
+        })
+    }
+    catch(error){
+        next(error)
+    }
+}
+
+const deleteOffer = async (req, res, next) => {
+    try {
+        const { id } = req.params
+        const userId = req.user.id
+
+        const deletedOffer = await userService.deleteOffer(id, userId)
+
+        return res.status(200).json({
+            success: true,
+            message: 'Offer deleted successfully',
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+const sendMessage = async(req, res, next) => {
+    try{
+        const senderId = req.user.id 
+        const jobId = req.params.id
+        const message = req.body.message
+
+        const createdMessage = await userService.createMessage(jobId, senderId, message)
+        return res.status(201).json({
+            success: true,
+            message: 'Message sent successfully',
+            data: createdMessage
+        })
+    }
+    catch(error){
+        next(error)
+    }
+}
+
+
 
 module.exports = {
     createUser,
     login,
     createJob,
-    getUserJobs
+    getUserJobs,
+    deleteUsersJob,
+    getAllOffers,
+    acceptOffer,
+    rejectOffer,
+    deleteOffer,
+    sendMessage
 }
