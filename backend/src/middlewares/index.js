@@ -23,6 +23,52 @@ const checkJWT = async(req, res, next) => {
     }
 }
 
+const checkAccess = (expectedRole) => {
+    return async (req, res, next) => {
+        const token = req.cookies.token
+
+        if (!token) {
+            return res.status(401).json({
+                success: false,
+                message: 'Missing token'
+            })
+        }
+
+        try {
+            const decoded = jwt.verify(
+                token,
+                process.env.TOKEN_CODE
+            )
+
+            const user = await getUserId(decoded.id)
+
+            if (!user) {
+                return res.status(401).json({
+                    success: false,
+                    message: 'Unauthorized'
+                })
+            }
+
+            if (user.role !== expectedRole) {
+                return res.status(403).json({
+                    success: false,
+                    message: 'Access denied'
+                })
+            }
+
+            req.user = decoded
+
+            next()
+        } catch (error) {
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid or expired token'
+            })
+        }
+    }
+}
+
 module.exports = {
-    checkJWT
+    checkJWT,
+    checkAccess
 }

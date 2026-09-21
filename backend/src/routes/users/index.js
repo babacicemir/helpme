@@ -1,11 +1,12 @@
 const { Router } = require('express')
 const User = require('../../controllers/users')
-const { checkJWT } = require('../../middlewares')
+const { checkJWT, checkAccess } = require('../../middlewares')
+const validation = require('../../middlewares/validator')
  
 const router = Router()
 
-router.post('/signup', User.createUser)
-router.post('/login', User.login)
+router.post('/signup', validation.validateCreateUser, User.createUser)
+router.post('/login', validation.validateLogin, User.login)
 router.post('/job/create', checkJWT, User.createJob)
 router.get('/jobs', checkJWT, User.getUserJobs)
 router.delete('/job/:id', checkJWT, User.deleteUsersJob)

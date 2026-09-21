@@ -1,5 +1,5 @@
 const { Router } = require('express')
-const { checkJWT } = require('../../middlewares')
+const { checkJWT, checkAccess } = require('../../middlewares')
 const Admin = require('../../controllers/admin')
 
 const router = Router()
