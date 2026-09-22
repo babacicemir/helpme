@@ -11,7 +11,7 @@ const createUser = async(userData) => {
         throw new Error('User with this email or username already exists')
     }
     
-    const hashPassword = hashedPassword(userData.password)
+    const hashPassword = await hashedPassword(userData.password)
 
     const user = await accountRepository.createUser(userData, hashPassword)
 

@@ -1,8 +1,10 @@
+const { compare } = require('bcrypt')
 const accountService = require('../../services/index')
 const userService = require('../../services/users')
 
 const createUser = async (req, res) => {
     try {
+        console.log(req.body)
         const userData = req.body
 
         const user = await accountService.createUser(userData)
@@ -25,6 +27,8 @@ const createUser = async (req, res) => {
 
 const login = async (req, res) => {
     try {
+
+        console.log(req.body)
         const token = await accountService.login(req.body);
 
         res.cookie('token', token, {
@@ -49,9 +53,9 @@ const login = async (req, res) => {
 
         return res.status(500).json({
             error: 'Internal server error'
-        });
+        })
     }
-};
+}
 
 const createJob = async(req, res, next) => {
     try{
