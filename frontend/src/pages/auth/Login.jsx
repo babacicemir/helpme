@@ -26,30 +26,34 @@ function Login() {
 
             console.log('LOGIN RESPONSE:', response)
 
-            setUser({
-                username: data.username,
-                role: 'USER'
-            })
+            const user = response.data
 
-            setSuccessMessage(
-                'You have successfully logged in! Redirecting...'
-            )
+        setUser(user)
 
-            setTimeout(() => {
+        setSuccessMessage(
+            'You have successfully logged in! Redirecting...'
+        )
+
+        setTimeout(() => {
+            if (user.role === 'ADMIN') {
+                navigate('/admin')
+            } else {
                 navigate('/')
-            }, 1500)
-        } catch (error) {
-            console.error('LOGIN ERROR:', error)
+            }
+        }, 1500)
 
-            setServerErrors(
-                error.response?.data?.errors || [
-                    error.response?.data?.error ||
-                    error.response?.data?.message ||
-                    'Something went wrong'
-                ]
-            )
-        }
+    } catch (error) {
+        console.error('LOGIN ERROR:', error)
+
+        setServerErrors(
+            error.response?.data?.errors || [
+                error.response?.data?.error ||
+                error.response?.data?.message ||
+                'Something went wrong'
+            ]
+        )
     }
+}
 
     return (
         <div className="container py-5">

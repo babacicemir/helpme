@@ -22,26 +22,26 @@ const login = async (userData) => {
     const user = await userRepository.findUserByUsernameEmail(
         userData.username,
         userData.email
-    );
+    )
 
     if (!user) {
-        throw new Error('INVALID_CREDENTIALS');
+        throw new Error('INVALID_CREDENTIALS')
     }
 
     const isPasswordMatching = await bcrypt.compare(
         userData.password,
         user.password
-    );
+    )
 
     if (!isPasswordMatching) {
-        throw new Error('INVALID_CREDENTIALS');
+        throw new Error('INVALID_CREDENTIALS')
     }
 
     const payload = {
         id: user.id,
         username: user.username,
         role: user.role
-    };
+    }
 
     const token = jwt.sign(
         payload,
@@ -49,11 +49,13 @@ const login = async (userData) => {
         {
             expiresIn: '2h'
         }
-    );
+    )
 
-    return token;
-};
-
+    return {
+        token,
+        user: payload
+    }
+}
 
 module.exports = {
     createUser,
