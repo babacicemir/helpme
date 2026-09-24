@@ -40,7 +40,7 @@ const checkAccess = (expectedRole) => {
                 process.env.TOKEN_CODE
             )
 
-            const user = await getUserId(decoded.id)
+            const user = await getUserById(decoded.id)
 
             if (!user) {
                 return res.status(401).json({
