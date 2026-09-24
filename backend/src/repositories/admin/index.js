@@ -40,7 +40,6 @@ const getAllJobs = async() => {
     JOIN categories AS c
         ON j.category_id = c.id
     WHERE u.deleted_at IS NULL
-    AND j.status = 'OPEN'
     ORDER BY j.created_at DESC
 `
     const result = await pool.query(query)

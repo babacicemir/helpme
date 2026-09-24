@@ -118,6 +118,9 @@ function AdminJobs() {
                                         <th>Username</th>
                                         <th>Title</th>
                                         <th>Category</th>
+                                        <th>Budget</th>
+                                        <th>Deadline</th>
+                                        <th>Location</th>
                                         <th>Status</th>
                                         <th>Actions</th>
                                     </tr>
@@ -136,6 +139,23 @@ function AdminJobs() {
 
                                             <td>
                                                 {job.category}
+                                            </td>
+
+                                            <td>
+                                                {job.budget} KM
+                                            </td>
+
+                                            <td>
+                                                {job.deadline
+                                                    ? new Date(
+                                                        job.deadline
+                                                    ).toLocaleDateString()
+                                                    : 'No deadline'}
+                                            </td>
+
+                                            <td>
+                                                {job.job_location ||
+                                                    'Not specified'}
                                             </td>
 
                                             <td>

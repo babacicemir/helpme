@@ -24,9 +24,23 @@ const deleteUser = async (id) => {
     return response.data
 }
 
+const getAllJobs = async() => {
+    const response = await api.get('/helpme.ba/admin/jobs')
+
+    return response.data
+}
+
+const deleteJob = async(id) => {
+    const response = await api.delete(`/helpme.ba/admin/job/${id}`)
+
+    return response.data
+}
+
 export {
     getAllUsers,
     blockUser,
     unblockUser,
-    deleteUser
+    deleteUser,
+    getAllJobs,
+    deleteJob
 }
