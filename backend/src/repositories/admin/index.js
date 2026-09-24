@@ -97,6 +97,12 @@ const deleteService = async(id) => {
     return result.rows[0]
 }
 
+const getAllCategories = async() => {
+    const query = 'SELECT * from categories'
+    const result = await pool.query(query)
+    return result.rows
+}
+
 const addCategory = async(categoryData) => {
     const query = 'INSERT INTO categories(name, description) VALUES ($1, $2) RETURNING *'
     const values = [categoryData.name, categoryData.description]
@@ -227,6 +233,7 @@ module.exports = {
     deleteJob,
     getAllServices,
     deleteService,
+    getAllCategories,
     addCategory,
     findCategory,
     deleteCategory,

@@ -1,285 +1,221 @@
-import { useEffect, useState } from 'react'
-import {
-    getAllJobs,
-    deleteJob
-} from '../../services/adminService'
+import { useNavigate } from "react-router-dom"
 
-function AdminJobs() {
-    const [jobs, setJobs] = useState([])
-    const [loading, setLoading] = useState(true)
-    const [error, setError] = useState('')
-    const [success, setSuccess] = useState('')
-    const [selectedJob, setSelectedJob] = useState(null)
-    const [deleteLoading, setDeleteLoading] = useState(false)
+function AdminDashboard() {
 
-    useEffect(() => {
-        const fetchJobs = async () => {
-            try {
-                const response = await getAllJobs()
+    const navigate = useNavigate()
 
-                setJobs(response.data)
-            } catch (error) {
-                console.error('GET JOBS ERROR:', error)
-
-                setError(
-                    error.response?.data?.message ||
-                    error.response?.data?.error ||
-                    'Failed to load jobs'
-                )
-            } finally {
-                setLoading(false)
-            }
+    const stats = [
+        {
+            title: 'Total Users',
+            value: '1,248',
+            description: 'Registered users'
+        },
+        {
+            title: 'Total Jobs',
+            value: '532',
+            description: 'Jobs posted'
+        },
+        {
+            title: 'Pending Reports',
+            value: '18',
+            description: 'Reports to review'
+        },
+        {
+            title: 'Blocked Users',
+            value: '12',
+            description: 'Currently blocked'
         }
+    ]
 
-        fetchJobs()
-    }, [])
-
-    const handleDeleteJob = async () => {
-        const confirmed = window.confirm(
-            `Are you sure you want to delete job "${selectedJob.title}"?`
-        )
-
-        if (!confirmed) {
-            return
+    const recentActivity = [
+        {
+            action: 'New user registered',
+            details: 'User emirtest joined HelpMe.ba',
+            time: '2 minutes ago'
+        },
+        {
+            action: 'New job created',
+            details: 'Website development',
+            time: '8 minutes ago'
+        },
+        {
+            action: 'New report submitted',
+            details: 'Spam report against a user',
+            time: '15 minutes ago'
+        },
+        {
+            action: 'New job created',
+            details: 'Home appliance repair',
+            time: '32 minutes ago'
         }
-
-        try {
-            setDeleteLoading(true)
-            setError('')
-            setSuccess('')
-
-            await deleteJob(selectedJob.job_id)
-
-            setJobs((currentJobs) =>
-                currentJobs.filter(
-                    (job) => job.job_id !== selectedJob.job_id
-                )
-            )
-
-            setSelectedJob(null)
-
-            setSuccess('Job deleted successfully.')
-        } catch (error) {
-            console.error('DELETE JOB ERROR:', error)
-
-            setError(
-                error.response?.data?.message ||
-                error.response?.data?.error ||
-                'Failed to delete job'
-            )
-        } finally {
-            setDeleteLoading(false)
-        }
-    }
+    ]
 
     return (
-        <div className="container py-4">
-            <div className="mb-4">
-                <h1 className="fw-bold">
-                    Jobs
-                </h1>
+        <div className="container-fluid py-4">
+            <div className="container">
 
-                <p className="text-muted mb-0">
-                    Manage jobs posted on HelpMe.ba
-                </p>
-            </div>
+                <div className="mb-4">
+                    <h1 className="fw-bold">
+                        Admin Dashboard
+                    </h1>
 
-            {loading && (
-                <div className="alert alert-info text-center">
-                    Loading jobs...
+                    <p className="text-muted mb-0">
+                        Welcome back, Admin. Here is what is happening
+                        on HelpMe.ba.
+                    </p>
                 </div>
-            )}
 
-            {success && (
-                <div className="alert alert-success text-center">
-                    {success}
-                </div>
-            )}
+                <div className="row g-4 mb-4">
+                    {stats.map((stat) => (
+                        <div
+                            className="col-md-6 col-xl-3"
+                            key={stat.title}
+                        >
+                            <div className="card border-0 shadow-sm h-100">
+                                <div className="card-body">
+                                    <h6 className="text-muted">
+                                        {stat.title}
+                                    </h6>
 
-            {error && (
-                <div className="alert alert-danger text-center">
-                    {error}
-                </div>
-            )}
+                                    <h2 className="fw-bold mt-3 mb-1">
+                                        {stat.value}
+                                    </h2>
 
-            {!loading && !error && jobs.length === 0 && (
-                <div className="alert alert-info text-center">
-                    There are currently no jobs posted on HelpMe.ba.
-                </div>
-            )}
-
-            {!loading && !error && jobs.length > 0 && (
-                <div className="card shadow-sm border-0">
-                    <div className="card-body">
-                        <div className="table-responsive">
-                            <table className="table table-hover align-middle mb-0">
-                                <thead>
-                                    <tr>
-                                        <th>Username</th>
-                                        <th>Title</th>
-                                        <th>Category</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-
-                                <tbody>
-                                    {jobs.map((job) => (
-                                        <tr key={job.job_id}>
-                                            <td>
-                                                {job.username}
-                                            </td>
-
-                                            <td>
-                                                {job.title}
-                                            </td>
-
-                                            <td>
-                                                {job.category}
-                                            </td>
-
-                                            <td>
-                                                {job.status}
-                                            </td>
-
-                                            <td>
-                                                <button
-                                                    className="btn btn-sm btn-outline-primary"
-                                                    onClick={() =>
-                                                        setSelectedJob(job)
-                                                    }
-                                                >
-                                                    View
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                    <p className="text-muted mb-0 small">
+                                        {stat.description}
+                                    </p>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    ))}
                 </div>
-            )}
 
-            {selectedJob && (
-                <>
-                    <div
-                        className="modal fade show d-block"
-                        tabIndex="-1"
-                        role="dialog"
-                    >
-                        <div className="modal-dialog modal-dialog-centered modal-lg">
-                            <div className="modal-content">
-                                <div className="modal-header">
-                                    <h5 className="modal-title">
-                                        Job Details
-                                    </h5>
+                <div className="row g-4">
 
-                                    <button
-                                        type="button"
-                                        className="btn-close"
-                                        onClick={() =>
-                                            setSelectedJob(null)
-                                        }
-                                        disabled={deleteLoading}
-                                    />
-                                </div>
+                    <div className="col-lg-8">
+                        <div className="card border-0 shadow-sm">
+                            <div className="card-body">
 
-                                <div className="modal-body">
-                                    <div className="mb-3">
-                                        <strong>Title:</strong>{' '}
-                                        {selectedJob.title}
-                                    </div>
-
-                                    <div className="mb-3">
-                                        <strong>Posted by:</strong>{' '}
-                                        {selectedJob.username}
-                                    </div>
-
-                                    <div className="mb-3">
-                                        <strong>Category:</strong>{' '}
-                                        {selectedJob.category}
-                                    </div>
-
-                                    <div className="mb-3">
-                                        <strong>Description:</strong>
-                                        <div className="mt-1">
-                                            {selectedJob.job_description}
-                                        </div>
-                                    </div>
-
-                                    <div className="mb-3">
-                                        <strong>Budget:</strong>{' '}
-                                        {selectedJob.budget} KM
-                                    </div>
-
-                                    <div className="mb-3">
-                                        <strong>Deadline:</strong>{' '}
-                                        {selectedJob.deadline
-                                            ? new Date(
-                                                selectedJob.deadline
-                                            ).toLocaleDateString()
-                                            : 'No deadline'}
-                                    </div>
-
-                                    <div className="mb-3">
-                                        <strong>Location:</strong>{' '}
-                                        {selectedJob.job_location ||
-                                            'Not specified'}
-                                    </div>
-
-                                    <div className="mb-3">
-                                        <strong>Status:</strong>{' '}
-                                        {selectedJob.status}
-                                    </div>
-
-                                    <div className="mb-3">
-                                        <strong>Created:</strong>{' '}
-                                        {new Date(
-                                            selectedJob.job_created_at
-                                        ).toLocaleDateString()}
-                                    </div>
-
+                                <div className="d-flex justify-content-between align-items-center mb-4">
                                     <div>
-                                        <strong>Updated:</strong>{' '}
-                                        {new Date(
-                                            selectedJob.job_updated_at
-                                        ).toLocaleDateString()}
+                                        <h5 className="fw-bold mb-1">
+                                            Recent Activity
+                                        </h5>
+
+                                        <p className="text-muted small mb-0">
+                                            Latest activity on the platform
+                                        </p>
                                     </div>
                                 </div>
 
-                                <div className="modal-footer">
-                                    <button
-                                        type="button"
-                                        className="btn btn-danger"
-                                        onClick={handleDeleteJob}
-                                        disabled={deleteLoading}
-                                    >
-                                        {deleteLoading
-                                            ? 'Deleting...'
-                                            : 'Delete'}
-                                    </button>
+                                <div className="list-group list-group-flush">
+                                    {recentActivity.map(
+                                        (activity, index) => (
+                                            <div
+                                                className="list-group-item px-0 py-3"
+                                                key={index}
+                                            >
+                                                <div className="d-flex justify-content-between">
+                                                    <div>
+                                                        <h6 className="fw-semibold mb-1">
+                                                            {activity.action}
+                                                        </h6>
 
-                                    <button
-                                        type="button"
-                                        className="btn btn-secondary"
-                                        onClick={() =>
-                                            setSelectedJob(null)
-                                        }
-                                        disabled={deleteLoading}
-                                    >
-                                        Close
-                                    </button>
+                                                        <p className="text-muted small mb-0">
+                                                            {activity.details}
+                                                        </p>
+                                                    </div>
+
+                                                    <small className="text-muted text-nowrap ms-3">
+                                                        {activity.time}
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        )
+                                    )}
                                 </div>
+
                             </div>
                         </div>
                     </div>
 
-                    <div className="modal-backdrop fade show"></div>
-                </>
-            )}
+                    <div className="col-lg-4">
+                        <div className="card border-0 shadow-sm">
+                            <div className="card-body">
+
+                                <h5 className="fw-bold mb-1">
+                                    Quick Actions
+                                </h5>
+
+                                <p className="text-muted small mb-4">
+                                    Frequently used admin actions
+                                </p>
+
+                                <div className="d-grid gap-2">
+
+                                    <button 
+                                    className="btn btn-primary"
+                                    onClick={() => navigate('/admin/users')}
+                                    >
+                                        Manage Users
+                                    </button>
+
+                                    <button 
+                                    className="btn btn-outline-primary"
+                                    onClick={() => navigate('/admin/jobs')}
+                                    >
+                                        Manage Jobs
+                                    </button>
+
+                                    <button 
+                                    className="btn btn-outline-primary"
+                                    >
+                                        Review Reports
+                                    </button>
+
+                                    <button className="btn btn-outline-primary"
+                                    onClick={() => navigate('/admin/categories')}
+                                    >
+                                        Manage Categories
+                                    </button>
+
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div className="card border-0 shadow-sm mt-4">
+                            <div className="card-body">
+
+                                <h5 className="fw-bold mb-3">
+                                    Reports
+                                </h5>
+
+                                <div className="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <span className="text-muted">
+                                            Require attention
+                                        </span>
+                                    </div>
+
+                                    <span className="badge bg-danger fs-6">
+                                        18
+                                    </span>
+                                </div>
+
+                                <button className="btn btn-danger w-100 mt-3">
+                                    Review Reports
+                                </button>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
         </div>
     )
 }
 
-export default AdminJobs
+export default AdminDashboard

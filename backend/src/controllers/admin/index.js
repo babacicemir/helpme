@@ -85,6 +85,19 @@ const deleteService = async(req, res, next) => {
     }
 }
 
+const getAllCategories = async(req, res, next) => {
+    try{
+        const categories = await adminService.getAllCategories()
+        return res.status(200).json({
+            success: true,
+            data: categories
+        })
+
+    }catch(error){
+        next(error)
+    }
+}
+
 const addCategory = async(req, res, next) => {
     try{
         const categoryData = req.body
@@ -201,6 +214,7 @@ module.exports = {
     deleteJob,
     getAllServices,
     deleteService,
+    getAllCategories,
     addCategory,
     deleteCategory,
     updateCategory,

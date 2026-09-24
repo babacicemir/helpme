@@ -57,6 +57,11 @@ const deleteService = async(id) => {
     return deletedService
 }
 
+const getAllCategories = async() => {
+    const categories = await adminRepository.getAllCategories()
+    return categories
+}
+
 const addCategory = async(categoryData) => {
 
     const existingCategory = await adminRepository.findCategory(categoryData.name)
@@ -148,5 +153,6 @@ module.exports={
     getAllReports,
     blockUser ,
     unBlockUser,
-    getBlockedUsers
+    getBlockedUsers,
+    getAllCategories
 }
