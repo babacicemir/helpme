@@ -344,6 +344,20 @@ const getAllGivenReviews = async(req, res, next) => {
     }
 }
 
+const getLatestJobs = async (req, res, next) => {
+    try {
+        const jobs = await userService.getLatestJobs()
+
+        return res.status(200).json({
+            success: true,
+            message: 'Jobs successfully retrieved',
+            data: jobs
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
 
 module.exports = {
     createUser,
@@ -364,5 +378,6 @@ module.exports = {
     getAllReceivedReviews,
     getAllGivenReviews,
     sendOffer,
-    getUserOffers
+    getUserOffers,
+    getLatestJobs
 }

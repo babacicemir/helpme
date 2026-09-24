@@ -148,20 +148,28 @@ const getMessagesByJob = async(jobId) => {
 
 const createReplyMessage = async(messageId, userId, message) => {
     const originalMessage = await usersRepository.getMessageById(messageId)
+
     if (!originalMessage) {
         const error = new Error('Message not found')
         error.statusCode = 404
         throw error
     }
 
-    const messageData = {
-        jobId : originalMessage.job_id,
-        senderId : userId,
-        message,
-        parentMessageId: originalMessage.id 
+    if (originalMessage.parent_message_id !== null) {
+        const error = new Error('You can only reply to a main message')
+        error.statusCode = 400
+        throw error
     }
-   
+
+    const messageData = {
+        jobId: originalMessage.job_id,
+        senderId: userId,
+        message,
+        parentMessageId: originalMessage.id
+    }
+
     const reply = await usersRepository.createReplyMessage(messageData)
+
     return reply
 }
 
@@ -201,7 +209,11 @@ const getGivenReviews = async(id) => {
     return reviews
 }
 
+const getLatestJobs = async () => {
+    const jobs = await usersRepository.getLatestJobs()
 
+    return jobs
+}
 
 
 module.exports = {
@@ -221,5 +233,6 @@ module.exports = {
     addRating,
     getReceivedReviews,
     getGivenReviews,
-    getUserOffers
+    getUserOffers,
+    getLatestJobs
 }

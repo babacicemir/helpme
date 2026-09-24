@@ -7,6 +7,8 @@ import AdminRoute from './AdminRoute.jsx'
 import AdminUsers from '../pages/admin/AdminUsers.jsx'
 import AdminJobs from '../pages/admin/AdminJobs.jsx'
 import AdminCategories from '../pages/admin/AdminCategories.jsx'
+import AdminReports from '../pages/admin/AdminReports.jsx'
+import Jobs from '../pages/user/jobs/Jobs.jsx'
 
 function AppRoutes(){
     return(
@@ -19,7 +21,9 @@ function AppRoutes(){
                 <Route path='/admin/users' element={<AdminUsers/>} />
                 <Route path='/admin/jobs' element={<AdminJobs/>}/>
                 <Route path='/admin/categories' element={<AdminCategories/>}/>
+                <Route path='/admin/reports' element={<AdminReports/>}/>
             </Route>
+            <Route path='/jobs' element={<Jobs/>}/>
         </Routes>
     )
 }

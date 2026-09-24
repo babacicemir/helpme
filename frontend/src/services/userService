@@ -1,0 +1,42 @@
+import api from './api'
+
+const getLatestJobs = async () => {
+    const response = await api.get('/helpme.ba/jobs/latest')
+
+    return response.data
+}
+
+const getMessagesByJob = async (jobId) => {
+    const response = await api.get(`/helpme.ba/job/${jobId}/messages`)
+    return response.data
+}
+
+const createMessage = async (jobId, message) => {
+    const response = await api.post(`/helpme.ba/job/${jobId}/message`, { message })
+
+    return response.data
+}
+
+const createReplyMessage = async (messageId, message) => {
+    const response = await api.post(`/helpme.ba/message/${messageId}/reply`, { message } )
+
+    return response.data
+}
+
+const sendOffer = async (jobId, price, deliveryDays, message) => {
+    const response = await api.post( `/helpme.ba/job/${jobId}/offer`, { price, delivery_days: deliveryDays, message })
+
+    return response.data
+}
+
+
+
+
+
+export {
+    getLatestJobs,
+    getMessagesByJob,
+    createMessage,
+    createReplyMessage,
+    sendOffer
+}

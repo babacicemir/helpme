@@ -113,6 +113,26 @@ const getAllReports = async() => {
 
 }
 
+const getDashboardStats = async() => {
+    const stats = await adminRepository.getDashboardStats()
+    const data ={
+        totalUsers: Number(stats.total_users),
+        blockedUsers: Number(stats.blocked_users),
+        totalJobs: Number(stats.total_jobs),
+        totalCategories: Number(stats.total_categories),
+        totalReports: Number(stats.total_reports),
+        resolvedReports: Number(stats.resolved_reports),
+        pendingReports: Number(stats.pending_reports)
+    }
+    return data
+}
+
+const getRecentActivity = async () => {
+    const activities = await adminRepository.getRecentActivity()
+
+    return activities
+}
+
 const blockUser = async(userId) => {
     const user = await adminRepository.blockUser(userId)
     if(!user){
@@ -140,6 +160,8 @@ const getBlockedUsers = async () => {
     return blockedUsers
 }
 
+
+
 module.exports={
     getAllUsers,
     deleteUser,
@@ -154,5 +176,7 @@ module.exports={
     blockUser ,
     unBlockUser,
     getBlockedUsers,
-    getAllCategories
+    getAllCategories,
+    getDashboardStats,
+    getRecentActivity,
 }

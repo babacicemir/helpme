@@ -182,7 +182,20 @@ const deleteMessage = async(messageId, userId) => {
 }
 
 const getMessagesByJob = async(jobId) => {
-    const query = 'SELECT * FROM messages WHERE job_id=$1 ORDER BY id ASC'
+    const query =  `
+        SELECT
+            m.id,
+            m.job_id,
+            m.sender_id,
+            u.username AS sender_username,
+            m.message,
+            m.parent_message_id,
+            m.created_at
+        FROM messages m
+        JOIN users_db u ON u.id = m.sender_id
+        WHERE m.job_id = $1
+        ORDER BY m.created_at ASC
+    `
     const values = [jobId]
     const result = await pool.query(query, values)
     return result.rows
@@ -231,6 +244,36 @@ const getJobById = async(id) => {
 }
 
 
+const getLatestJobs = async () => {
+    const query = `
+        SELECT
+            j.id,
+            j.title,
+            j.description,
+            j.budget,
+            j.deadline,
+            j.location,
+            j.status,
+            j.created_at,
+            j.updated_at,
+            c.id AS category_id,
+            c.name AS category,
+            u.id AS user_id,
+            u.username
+        FROM jobs AS j
+        JOIN categories AS c
+            ON j.category_id = c.id
+        JOIN users_db AS u
+            ON j.user_id = u.id
+        WHERE j.status = 'OPEN'
+        AND u.deleted_at IS NULL
+        ORDER BY j.created_at DESC
+    `
+
+    const result = await pool.query(query)
+
+    return result.rows
+}
 
 
 module.exports = { 
@@ -257,5 +300,6 @@ module.exports = {
     getGivenReviews,
     sendOffer,
     getJobById,
-    getMyOffers
+    getMyOffers,
+    getLatestJobs
 }

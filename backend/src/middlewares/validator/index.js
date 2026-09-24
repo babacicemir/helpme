@@ -168,7 +168,67 @@ function validateLogin(req, res, next) {
     next()
 }
 
+const messageSchema = Joi.object({
+    message: Joi.string()
+        .trim()
+        .min(1)
+        .max(1000)
+        .required()
+        .messages({
+            'string.empty': 'Message cannot be empty',
+            'string.min': 'Message must contain at least 1 character',
+            'string.max': 'Message cannot exceed 1000 characters',
+            'any.required': 'Message is required'
+        })
+})
+
+const validateCreateMessage = (req, res, next) => {
+    const { error, value } = messageSchema.validate(
+        req.body,
+        { abortEarly: false }
+    )
+
+    if (error) {
+        const errorMessages = error.details.map(
+            (detail) => detail.message
+        )
+
+        return res.status(400).json({
+            success: false,
+            message: 'Validation failed',
+            errors: errorMessages
+        })
+    }
+
+    req.body = value
+    next()
+}
+
+const validateCreateReplyMessage = (req, res, next) => {
+    const { error, value } = messageSchema.validate(
+        req.body,
+        { abortEarly: false }
+    )
+
+    if (error) {
+        const errorMessages = error.details.map(
+            (detail) => detail.message
+        )
+
+        return res.status(400).json({
+            success: false,
+            message: 'Validation failed',
+            errors: errorMessages
+        })
+    }
+
+    req.body = value
+    next()
+}
+
 module.exports = {
     validateCreateUser,
-    validateLogin
+    validateLogin,
+    validateCreateMessage,
+    validateCreateReplyMessage
 }

@@ -226,6 +226,132 @@ const getBlockedUsers = async () => {
     return result.rows
 }
 
+const getDashboardStats = async() => {
+    const query = `
+        SELECT
+            ( SELECT COUNT(*) FROM users_db WHERE deleted_at IS NULL) AS total_users,
+            ( SELECT COUNT(*) FROM users_db WHERE deleted_at IS NULL AND is_blocked = TRUE) AS blocked_users,
+            ( SELECT COUNT(*) FROM jobs) AS total_jobs,
+            ( SELECT COUNT(*) FROM categories) AS total_categories,
+            ( SELECT COUNT(*) FROM reports_helpme) AS total_reports,
+            ( SELECT COUNT(*) FROM reports_helpme WHERE status = 'RESOLVED') AS resolved_reports,
+            ( SELECT COUNT(*) FROM reports_helpme WHERE status = 'PENDING') AS pending_reports
+    `
+    const result = await pool.query(query)
+    return result.rows[0]
+}
+
+const getRecentActivity = async () => {
+    const query = `
+        SELECT *
+        FROM (
+            SELECT
+                'USER_REGISTERED' AS type,
+                'New user registered' AS title,
+                CONCAT(
+                    'User ',
+                    username,
+                    ' registered'
+                ) AS description,
+                created_at
+            FROM users_db
+            WHERE deleted_at IS NULL
+            AND role = 'USER'
+            ORDER BY created_at DESC
+            LIMIT 1
+        ) AS user_activity
+
+        UNION ALL
+
+        SELECT *
+        FROM (
+            SELECT
+                'JOB_CREATED' AS type,
+                'New job created' AS title,
+                CONCAT(
+                    'New job: ',
+                    j.title,
+                    ' by ',
+                    u.username
+                ) AS description,
+                j.created_at
+            FROM jobs AS j
+            JOIN users_db AS u
+                ON j.user_id = u.id
+            ORDER BY j.created_at DESC
+            LIMIT 1
+        ) AS job_activity
+
+        UNION ALL
+
+        SELECT *
+        FROM (
+            SELECT
+                'REPORT_SUBMITTED' AS type,
+                'New report submitted' AS title,
+                CONCAT(
+                    'New report submitted by ',
+                    reporter.username
+                ) AS description,
+                r.created_at
+            FROM reports_helpme AS r
+            JOIN users_db AS reporter
+                ON r.reporter_id = reporter.id
+            ORDER BY r.created_at DESC
+            LIMIT 1
+        ) AS report_activity
+
+        UNION ALL
+
+        SELECT *
+        FROM (
+            SELECT
+                'REPORT_RESOLVED' AS type,
+                'Report resolved' AS title,
+                CONCAT(
+                    'Report #',
+                    r.id,
+                    ' for ',
+                    rr.name,
+                    ' was resolved'
+                ) AS description,
+                r.updated_at AS created_at
+            FROM reports_helpme AS r
+            JOIN report_reasons AS rr
+                ON r.reason_id = rr.id
+            WHERE r.status = 'RESOLVED'
+            ORDER BY r.updated_at DESC
+            LIMIT 1
+        ) AS resolved_activity
+
+        UNION ALL
+
+        SELECT *
+        FROM (
+            SELECT
+                'USER_BLOCKED' AS type,
+                'User blocked' AS title,
+                CONCAT(
+                    'User ',
+                    u.username,
+                    ' was blocked'
+                ) AS description,
+                b.blocked_at AS created_at
+            FROM blocked_users AS b
+            JOIN users_db AS u
+                ON b.user_id = u.id
+            ORDER BY b.blocked_at DESC
+            LIMIT 1
+        ) AS blocked_activity
+
+        ORDER BY created_at DESC
+    `
+
+    const result = await pool.query(query)
+
+    return result.rows
+}
+
 module.exports = {
     getAllUsers, 
     deleteUser,
@@ -241,5 +367,7 @@ module.exports = {
     getAllReports,
     blockUser,
     unBlockUser,
-    getBlockedUsers
+    getBlockedUsers,
+    getDashboardStats,
+    getRecentActivity
 }

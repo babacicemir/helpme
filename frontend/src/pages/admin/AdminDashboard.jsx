@@ -1,54 +1,143 @@
-import { useNavigate } from "react-router-dom"
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import {
+    getDashboardStats,
+    getRecentActivity
+} from '../../services/adminService'
 
 function AdminDashboard() {
 
     const navigate = useNavigate()
 
-    const stats = [
+    const [stats, setStats] = useState(null)
+    const [recentActivity, setRecentActivity] = useState([])
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState('')
+
+    useEffect(() => {
+        const loadDashboardData = async () => {
+            try {
+                const [statsResponse, activityResponse] =
+                    await Promise.all([
+                        getDashboardStats(),
+                        getRecentActivity()
+                    ])
+
+                setStats(statsResponse.data)
+                setRecentActivity(activityResponse.data)
+            } catch (error) {
+                console.error('DASHBOARD ERROR:', error)
+                setError('Failed to load dashboard data')
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        loadDashboardData()
+    }, [])
+
+    const getTimeAgo = (date) => {
+        const now = new Date()
+        const createdAt = new Date(date)
+
+        const diffInSeconds = Math.floor(
+            (now - createdAt) / 1000
+        )
+
+        if (diffInSeconds < 60) {
+            return 'just now'
+        }
+
+        const diffInMinutes = Math.floor(
+            diffInSeconds / 60
+        )
+
+        if (diffInMinutes < 60) {
+            return `${diffInMinutes} ${
+                diffInMinutes === 1 ? 'minute' : 'minutes'
+            } ago`
+        }
+
+        const diffInHours = Math.floor(
+            diffInMinutes / 60
+        )
+
+        if (diffInHours < 24) {
+            return `${diffInHours} ${
+                diffInHours === 1 ? 'hour' : 'hours'
+            } ago`
+        }
+
+        const diffInDays = Math.floor(
+            diffInHours / 24
+        )
+
+        return `${diffInDays} ${
+            diffInDays === 1 ? 'day' : 'days'
+        } ago`
+    }
+
+    const dashboardStats = [
         {
             title: 'Total Users',
-            value: '1,248',
+            value: stats?.totalUsers ?? 0,
             description: 'Registered users'
         },
         {
+            title: 'Blocked Users',
+            value: stats?.blockedUsers ?? 0,
+            description: 'Currently blocked'
+        },
+        {
             title: 'Total Jobs',
-            value: '532',
+            value: stats?.totalJobs ?? 0,
             description: 'Jobs posted'
         },
         {
-            title: 'Pending Reports',
-            value: '18',
-            description: 'Reports to review'
+            title: 'Total Categories',
+            value: stats?.totalCategories ?? 0,
+            description: 'Available categories'
         },
         {
-            title: 'Blocked Users',
-            value: '12',
-            description: 'Currently blocked'
+            title: 'Total Reports',
+            value: stats?.totalReports ?? 0,
+            description: 'All submitted reports'
+        },
+        {
+            title: 'Resolved Reports',
+            value: stats?.resolvedReports ?? 0,
+            description: 'Resolved reports'
+        },
+        {
+            title: 'In Progress Reports',
+            value: stats?.pendingReports ?? 0,
+            description: 'Reports to review'
         }
     ]
 
-    const recentActivity = [
-        {
-            action: 'New user registered',
-            details: 'User emirtest joined HelpMe.ba',
-            time: '2 minutes ago'
-        },
-        {
-            action: 'New job created',
-            details: 'Website development',
-            time: '8 minutes ago'
-        },
-        {
-            action: 'New report submitted',
-            details: 'Spam report against a user',
-            time: '15 minutes ago'
-        },
-        {
-            action: 'New job created',
-            details: 'Home appliance repair',
-            time: '32 minutes ago'
-        }
-    ]
+    if (loading) {
+        return (
+            <div className="container-fluid py-4">
+                <div className="container">
+                    <p className="text-muted">
+                        Loading dashboard...
+                    </p>
+                </div>
+            </div>
+        )
+    }
+
+    if (error) {
+        return (
+            <div className="container-fluid py-4">
+                <div className="container">
+                    <div className="alert alert-danger">
+                        {error}
+                    </div>
+                </div>
+            </div>
+        )
+    }
 
     return (
         <div className="container-fluid py-4">
@@ -66,7 +155,7 @@ function AdminDashboard() {
                 </div>
 
                 <div className="row g-4 mb-4">
-                    {stats.map((stat) => (
+                    {dashboardStats.map((stat) => (
                         <div
                             className="col-md-6 col-xl-3"
                             key={stat.title}
@@ -109,28 +198,36 @@ function AdminDashboard() {
                                 </div>
 
                                 <div className="list-group list-group-flush">
-                                    {recentActivity.map(
-                                        (activity, index) => (
-                                            <div
-                                                className="list-group-item px-0 py-3"
-                                                key={index}
-                                            >
-                                                <div className="d-flex justify-content-between">
-                                                    <div>
-                                                        <h6 className="fw-semibold mb-1">
-                                                            {activity.action}
-                                                        </h6>
+                                    {recentActivity.length === 0 ? (
+                                        <p className="text-muted mb-0">
+                                            No recent activity.
+                                        </p>
+                                    ) : (
+                                        recentActivity.map(
+                                            (activity) => (
+                                                <div
+                                                    className="list-group-item px-0 py-3"
+                                                    key={`${activity.type}-${activity.created_at}`}
+                                                >
+                                                    <div className="d-flex justify-content-between">
+                                                        <div>
+                                                            <h6 className="fw-semibold mb-1">
+                                                                {activity.title}
+                                                            </h6>
 
-                                                        <p className="text-muted small mb-0">
-                                                            {activity.details}
-                                                        </p>
+                                                            <p className="text-muted small mb-0">
+                                                                {activity.description}
+                                                            </p>
+                                                        </div>
+
+                                                        <small className="text-muted text-nowrap ms-3">
+                                                            {getTimeAgo(
+                                                                activity.created_at
+                                                            )}
+                                                        </small>
                                                     </div>
-
-                                                    <small className="text-muted text-nowrap ms-3">
-                                                        {activity.time}
-                                                    </small>
                                                 </div>
-                                            </div>
+                                            )
                                         )
                                     )}
                                 </div>
@@ -140,6 +237,7 @@ function AdminDashboard() {
                     </div>
 
                     <div className="col-lg-4">
+
                         <div className="card border-0 shadow-sm">
                             <div className="card-body">
 
@@ -153,28 +251,38 @@ function AdminDashboard() {
 
                                 <div className="d-grid gap-2">
 
-                                    <button 
-                                    className="btn btn-primary"
-                                    onClick={() => navigate('/admin/users')}
+                                    <button
+                                        className="btn btn-primary"
+                                        onClick={() =>
+                                            navigate('/admin/users')
+                                        }
                                     >
                                         Manage Users
                                     </button>
 
-                                    <button 
-                                    className="btn btn-outline-primary"
-                                    onClick={() => navigate('/admin/jobs')}
+                                    <button
+                                        className="btn btn-outline-primary"
+                                        onClick={() =>
+                                            navigate('/admin/jobs')
+                                        }
                                     >
                                         Manage Jobs
                                     </button>
 
-                                    <button 
-                                    className="btn btn-outline-primary"
+                                    <button
+                                        className="btn btn-outline-primary"
+                                        onClick={() =>
+                                            navigate('/admin/reports')
+                                        }
                                     >
                                         Review Reports
                                     </button>
 
-                                    <button className="btn btn-outline-primary"
-                                    onClick={() => navigate('/admin/categories')}
+                                    <button
+                                        className="btn btn-outline-primary"
+                                        onClick={() =>
+                                            navigate('/admin/categories')
+                                        }
                                     >
                                         Manage Categories
                                     </button>
@@ -194,21 +302,18 @@ function AdminDashboard() {
                                 <div className="d-flex justify-content-between align-items-center">
                                     <div>
                                         <span className="text-muted">
-                                            Require attention
+                                            In progress
                                         </span>
                                     </div>
 
                                     <span className="badge bg-danger fs-6">
-                                        18
+                                        {stats?.pendingReports ?? 0}
                                     </span>
                                 </div>
 
-                                <button className="btn btn-danger w-100 mt-3">
-                                    Review Reports
-                                </button>
-
                             </div>
                         </div>
+
                     </div>
 
                 </div>

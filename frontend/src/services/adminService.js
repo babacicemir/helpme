@@ -60,6 +60,21 @@ const deleteCategory = async (id) => {
     return response.data
 }
 
+const getAllReports = async (id) => {
+    const response = await api.get('/helpme.ba/admin/reports')
+    return response.data
+}
+
+const getDashboardStats = async() => {
+    const response = await api.get('/helpme.ba/admin/stats')
+    return response.data
+}
+
+const getRecentActivity = async() => {
+    const response = await api.get('/helpme.ba/admin/activity')
+    return response.data
+}
+
 export {
     getAllUsers,
     blockUser,
@@ -70,5 +85,8 @@ export {
     getAllCategories,
     addCategory,
     updateCategory,
-    deleteCategory
+    deleteCategory,
+    getAllReports,
+    getDashboardStats,
+    getRecentActivity
 }

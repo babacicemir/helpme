@@ -162,9 +162,11 @@ const getAllReports = async(req, res, next) => {
 const blockUser = async (req, res, next) => {
     try {
         const { id } = req.params
+        console.log("id", id)
+
 
         const user = await adminService.blockUser(id)
-
+        console.log(user)
         return res.status(200).json({
             success: true,
             message: 'User blocked successfully',
@@ -205,7 +207,31 @@ const getBlockedUsers = async (req, res, next) => {
     }
 }
 
+const getDashboardStats = async (req, res, next) => {
+    try {
+        const stats = await adminService.getDashboardStats()
 
+        return res.status(200).json({
+            success: true,
+            data: stats
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+const getRecentActivity = async (req, res, next) => {
+    try {
+        const activities = await adminService.getRecentActivity()
+
+        return res.status(200).json({
+            success: true,
+            data: activities
+        })
+    } catch (error) {
+        next(error)
+    }
+}
 
 module.exports = {
     getAllUsers,
@@ -221,5 +247,7 @@ module.exports = {
     getAllReports,
     blockUser,
     unBlockUser,
-    getBlockedUsers
+    getBlockedUsers,
+    getDashboardStats,
+    getRecentActivity
 }

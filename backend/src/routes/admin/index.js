@@ -18,5 +18,7 @@ router.get('/reports', checkJWT, checkAccess('ADMIN'), Admin.getAllReports)
 router.patch('/users/block/:id', checkJWT, checkAccess('ADMIN'), Admin.blockUser)
 router.patch('/users/unblock/:id', checkJWT, checkAccess('ADMIN'), Admin.unBlockUser)
 router.get('/blocked_users', checkJWT, checkAccess('ADMIN'), Admin.getBlockedUsers)
+router.get('/stats', checkJWT, checkAccess('ADMIN'), Admin.getDashboardStats)
+router.get('/activity', checkJWT, checkAccess('ADMIN'), Admin.getRecentActivity)
 
 module.exports = router
