@@ -226,9 +226,188 @@ const validateCreateReplyMessage = (req, res, next) => {
     next()
 }
 
+const createJobSchema = Joi.object({
+    categoryId: Joi.number()
+        .integer()
+        .positive()
+        .required()
+        .messages({
+            'number.base': 'Category ID must be a number',
+            'number.integer': 'Category ID must be an integer',
+            'number.positive': 'Category ID must be a positive number',
+            'any.required': 'Category is required'
+        }),
+
+    title: Joi.string()
+        .trim()
+        .min(3)
+        .max(100)
+        .required()
+        .messages({
+            'string.empty': 'Title cannot be empty',
+            'string.min': 'Title must contain at least 3 characters',
+            'string.max': 'Title cannot exceed 100 characters',
+            'any.required': 'Title is required'
+        }),
+
+    description: Joi.string()
+        .trim()
+        .min(10)
+        .max(2000)
+        .required()
+        .messages({
+            'string.empty': 'Description cannot be empty',
+            'string.min': 'Description must contain at least 10 characters',
+            'string.max': 'Description cannot exceed 2000 characters',
+            'any.required': 'Description is required'
+        }),
+
+    budget: Joi.number()
+        .positive()
+        .required()
+        .messages({
+            'number.base': 'Budget must be a number',
+            'number.positive': 'Budget must be greater than 0',
+            'any.required': 'Budget is required'
+        }),
+
+    deadline: Joi.date()
+        .iso()
+        .required()
+        .messages({
+            'date.base': 'Deadline must be a valid date',
+            'date.format': 'Deadline must be in a valid date format',
+            'any.required': 'Deadline is required'
+        }),
+
+    location: Joi.string()
+        .trim()
+        .min(2)
+        .max(100)
+        .required()
+        .messages({
+            'string.empty': 'Location cannot be empty',
+            'string.min': 'Location must contain at least 2 characters',
+            'string.max': 'Location cannot exceed 100 characters',
+            'any.required': 'Location is required'
+        })
+})
+
+const updateJobSchema = Joi.object({
+    categoryId: Joi.number()
+        .integer()
+        .positive()
+        .messages({
+            'number.base': 'Category ID must be a number',
+            'number.integer': 'Category ID must be an integer',
+            'number.positive': 'Category ID must be a positive number'
+        }),
+
+    title: Joi.string()
+        .trim()
+        .min(3)
+        .max(100)
+        .messages({
+            'string.empty': 'Title cannot be empty',
+            'string.min': 'Title must contain at least 3 characters',
+            'string.max': 'Title cannot exceed 100 characters'
+        }),
+
+    description: Joi.string()
+        .trim()
+        .min(10)
+        .max(2000)
+        .messages({
+            'string.empty': 'Description cannot be empty',
+            'string.min': 'Description must contain at least 10 characters',
+            'string.max': 'Description cannot exceed 2000 characters'
+        }),
+
+    budget: Joi.number()
+        .positive()
+        .messages({
+            'number.base': 'Budget must be a number',
+            'number.positive': 'Budget must be greater than 0'
+        }),
+
+    deadline: Joi.date()
+        .iso()
+        .messages({
+            'date.base': 'Deadline must be a valid date',
+            'date.format': 'Deadline must be in a valid date format'
+        }),
+
+    location: Joi.string()
+        .trim()
+        .min(2)
+        .max(100)
+        .messages({
+            'string.empty': 'Location cannot be empty',
+            'string.min': 'Location must contain at least 2 characters',
+            'string.max': 'Location cannot exceed 100 characters'
+        })
+})
+    .min(1)
+    .messages({
+        'object.min': 'At least one field must be provided for update'
+    })
+
+
+const validateCreateJob = (req, res, next) => {
+    const { error, value } = createJobSchema.validate(
+        req.body,
+        { abortEarly: false }
+    )
+
+    if (error) {
+        const errorMessages = error.details.map(
+            (detail) => detail.message
+        )
+
+        return res.status(400).json({
+            success: false,
+            message: 'Validation failed',
+            errors: errorMessages
+        })
+    }
+
+    req.body = value
+    next()
+}
+
+const validateUpdateJob = (req, res, next) => {
+    console.log('UPDATE VALIDATOR BODY:', req.body)
+
+    const { error, value } = updateJobSchema.validate(
+        req.body,
+        { abortEarly: false }
+    )
+
+    if (error) {
+        console.log('UPDATE VALIDATOR ERROR:', error.details)
+
+        const errorMessages = error.details.map(
+            (detail) => detail.message
+        )
+
+        return res.status(400).json({
+            success: false,
+            message: 'Validation failed',
+            errors: errorMessages
+        })
+    }
+
+    console.log('UPDATE VALIDATOR PASSED:', value)
+
+    req.body = value
+    next()
+}  
+
 module.exports = {
     validateCreateUser,
     validateLogin,
     validateCreateMessage,
-    validateCreateReplyMessage
+    validateCreateReplyMessage,
+    validateCreateJob,
+    validateUpdateJob
 }

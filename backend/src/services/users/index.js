@@ -169,7 +169,6 @@ const createReplyMessage = async(messageId, userId, message) => {
     }
 
     const reply = await usersRepository.createReplyMessage(messageData)
-
     return reply
 }
 
@@ -215,6 +214,23 @@ const getLatestJobs = async () => {
     return jobs
 }
 
+const getAllCategories = async() => {
+    const categories = await usersRepository.getAllCategories()
+    return categories
+}
+
+const updateJob = async (jobId, userId, jobData) => {
+    const updatedJob = await usersRepository.updateJob( jobId, userId, jobData )
+
+    if (!updatedJob) {
+        const error = new Error('Job not found')
+        error.statusCode = 404
+        throw error
+    }
+
+    return updatedJob
+}
+
 
 module.exports = {
     createJob,
@@ -234,5 +250,7 @@ module.exports = {
     getReceivedReviews,
     getGivenReviews,
     getUserOffers,
-    getLatestJobs
+    getLatestJobs,
+    getAllCategories,
+    updateJob
 }

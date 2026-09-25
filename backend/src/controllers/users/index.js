@@ -358,6 +358,50 @@ const getLatestJobs = async (req, res, next) => {
     }
 }
 
+const getAllCategories = async(req, res, next) => {
+    try{
+        const categories = await userService.getAllCategories()
+        return res.status(200).json({
+            success: true,
+            data: categories
+        })
+
+    }catch(error){
+        next(error)
+    }
+}
+
+const updateJob = async (req, res, next) => {
+    try {
+        const jobId = req.params.id
+        console.log("ID posla:", jobId)
+
+        const jobData = {
+            categoryId: req.body.categoryId,
+            title: req.body.title,
+            description: req.body.description,
+            budget: req.body.budget,
+            deadline: req.body.deadline,
+            location: req.body.location
+        }
+
+        const updatedJob = await userService.updateJob(
+            jobId,
+            req.user.id,
+            jobData
+        )
+
+        return res.status(200).json({
+            success: true,
+            message: 'Job updated successfully',
+            data: updatedJob
+        })
+    }
+    catch(error){
+        next(error)
+    }
+}
+
 
 module.exports = {
     createUser,
@@ -379,5 +423,7 @@ module.exports = {
     getAllGivenReviews,
     sendOffer,
     getUserOffers,
-    getLatestJobs
+    getLatestJobs,
+    getAllCategories,
+    updateJob
 }

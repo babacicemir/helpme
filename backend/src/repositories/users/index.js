@@ -32,7 +32,7 @@ const getUserJobs = async(user_id) => {
     const query = 'SELECT * FROM jobs WHERE user_id=$1'
     const values = [user_id]
     const result = await pool.query(query, values)
-    return result.rows[0]
+    return result.rows
 }
 
 const deleteUsersJob = async(user_id, job_id) => {
@@ -275,6 +275,35 @@ const getLatestJobs = async () => {
     return result.rows
 }
 
+const getAllCategories = async() => {
+    const query = 'SELECT * from categories'
+    const result = await pool.query(query)
+    return result.rows
+}
+
+
+const updateJob = async (jobId, userId, jobData) => {
+    const query = `
+        UPDATE jobs
+        SET
+            category_id = COALESCE($1, category_id),
+            title = COALESCE($2, title),
+            description = COALESCE($3, description),
+            budget = COALESCE($4, budget),
+            deadline = COALESCE($5, deadline),
+            location = COALESCE($6, location),
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = $7
+        AND user_id = $8
+        RETURNING *
+    `
+
+    const values = [jobData.categoryId, jobData.title, jobData.description, jobData.budget, jobData.deadline, jobData.location, jobId, userId]
+
+    const result = await pool.query(query, values)
+
+    return result.rows[0]
+}
 
 module.exports = { 
     findUserByUsernameEmail,
@@ -301,5 +330,7 @@ module.exports = {
     sendOffer,
     getJobById,
     getMyOffers,
-    getLatestJobs
+    getLatestJobs,
+    getAllCategories,
+    updateJob
 }

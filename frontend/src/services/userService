@@ -29,14 +29,74 @@ const sendOffer = async (jobId, price, deliveryDays, message) => {
     return response.data
 }
 
+const getUserJobs = async () => {
+    const response = await api.get('/helpme.ba/jobs')
 
+    return response.data
+}
 
+const getCategories = async () => {
+    const response = await api.get('/helpme.ba/categories')
 
+    return response.data
+}
+
+const createJob = async (
+    categoryId,
+    title,
+    description,
+    budget,
+    deadline,
+    location
+) => {
+    const response = await api.post('/helpme.ba/job/create', {
+        categoryId,
+        title,
+        description,
+        budget,
+        deadline,
+        location
+    })
+
+    return response.data
+}
+
+const updateJob = async (
+    jobId,
+    categoryId,
+    title,
+    description,
+    budget,
+    deadline,
+    location
+) => {
+    const response = await api.patch(`/helpme.ba/job/${jobId}`, {
+        categoryId,
+        title,
+        description,
+        budget,
+        deadline,
+        location
+    })
+
+    return response.data
+}
+
+const deleteJob = async (jobId) => {
+    const response = await api.delete(`/helpme.ba/job/${jobId}`)
+
+    return response.data
+}
 
 export {
     getLatestJobs,
     getMessagesByJob,
     createMessage,
     createReplyMessage,
-    sendOffer
+    sendOffer,
+    getUserJobs,
+    getCategories,
+    createJob,
+    updateJob,
+    deleteJob
 }

@@ -14,41 +14,55 @@ function Navbar() {
                     HelpMe.ba
                 </Link>
 
-                <div className="d-flex align-items-center gap-2">
-                    <Link
-                        className="nav-link"
-                        to="/"
-                    >
-                        Home
-                    </Link>
-
+                <div className="d-flex align-items-center gap-3">
                     {user ? (
-                        <>
-                            <Link
-                                className="nav-link"
-                                to="/jobs"
-                            >
-                                Jobs
-                            </Link>
+                        user.role === 'ADMIN' ? (
+                            <>
+                                <Link
+                                    className="nav-link"
+                                    to="/profile"
+                                >
+                                    Profile
+                                </Link>
 
-                            <Link
-                                className="nav-link"
-                                to="/offers"
-                            >
-                                My Offers
-                            </Link>
+                                <button
+                                    className="btn btn-outline-danger"
+                                    onClick={logout}
+                                >
+                                    Logout
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                <Link
+                                    className="nav-link"
+                                    to="/my-jobs"
+                                >
+                                    My Jobs
+                                </Link>
 
-                            <span className="ms-2">
-                                Pozdrav, {user.username}
-                            </span>
+                                <Link
+                                    className="nav-link"
+                                    to="/offers"
+                                >
+                                    My Offers
+                                </Link>
 
-                            <button
-                                className="btn btn-outline-danger"
-                                onClick={logout}
-                            >
-                                Logout
-                            </button>
-                        </>
+                                <Link
+                                    className="nav-link"
+                                    to="/profile"
+                                >
+                                    Profile
+                                </Link>
+
+                                <button
+                                    className="btn btn-outline-danger"
+                                    onClick={logout}
+                                >
+                                    Logout
+                                </button>
+                            </>
+                        )
                     ) : (
                         <>
                             <Link
