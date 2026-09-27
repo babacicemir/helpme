@@ -48,7 +48,7 @@ function Navbar() {
 
                                     <Link
                                         className="nav-link"
-                                        to="/offers"
+                                        to="/my-offers"
                                     >
                                         My Offers
                                     </Link>

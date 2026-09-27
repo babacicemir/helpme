@@ -1,4 +1,3 @@
-const { compare } = require('bcrypt')
 const accountService = require('../../services/index')
 const userService = require('../../services/users')
 
@@ -488,6 +487,21 @@ const markAllNotificationsAsSeen = async (req, res, next) => {
     }
 }
 
+const getJobsByCategory = async(req, res, next) => {
+    try{
+        const { categoryId } = req.params
+
+        const jobs = await userService.getJobsByCategory(categoryId)
+
+        res.status(200).json({
+            message: 'Jobs retrieved successfully',
+            data: jobs
+        })
+    }catch(error){
+        next(error)
+    }
+}
+
 
 module.exports = {
     createUser,
@@ -516,5 +530,6 @@ module.exports = {
     getNotifications,
     getUnseenNotifications,
     markAllNotificationsAsSeen,
-    markNotificationAsSeen
+    markNotificationAsSeen,
+    getJobsByCategory
 }

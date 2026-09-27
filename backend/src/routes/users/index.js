@@ -33,5 +33,6 @@ router.get('/notifications', checkJWT, User.getNotifications)
 router.get('/notifications/unseen', checkJWT, User.getUnseenNotifications)
 router.patch('/notifications/:id/seen', checkJWT, User.markNotificationAsSeen)
 router.patch('/notifications/seen-all', checkJWT, User.markAllNotificationsAsSeen)
+router.get('/jobs/category/:categoryId', checkJWT, User.getJobsByCategory)
 
 module.exports = router

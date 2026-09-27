@@ -123,6 +123,20 @@ const markAllNotificationsAsSeen = async () => {
     return response.data
 }
 
+const getJobsByCategory = async(categoryId) => {
+    const response = await api.get(`/helpme.ba/jobs/category/${categoryId}`)
+
+    return response.data
+}
+
+const getUserOffers = async () => {
+    const response = await api.get('/helpme.ba/user/offers')
+
+    return response.data
+}
+
+
+
 export {
     getLatestJobs,
     getMessagesByJob,
@@ -140,5 +154,8 @@ export {
     getNotifications,
     getUnseenNotifications,
     markAllNotificationsAsSeen,
-    markNotificationAsSeen
+    markNotificationAsSeen,
+    getJobsByCategory,
+    getUserOffers
+    
 }

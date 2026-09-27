@@ -10,6 +10,8 @@ import AdminCategories from '../pages/admin/AdminCategories.jsx'
 import AdminReports from '../pages/admin/AdminReports.jsx'
 import Jobs from '../pages/user/jobs/Jobs.jsx'
 import MyJobs from '../pages/user/jobs/MyJobs.jsx'
+import JobsByCategory from '../pages/user/jobs/JobsByCategory.jsx'
+import MyOffers from '../pages/user/offers/MyOffers.jsx'
 
 function AppRoutes(){
     return(
@@ -26,6 +28,8 @@ function AppRoutes(){
             </Route>
             <Route path='/jobs' element={<Jobs/>}/>
             <Route path='/my-jobs' element={<MyJobs/>}/>
+            <Route path='/category-jobs'  element={<JobsByCategory/>}/>
+            <Route path='/my-offers' element={<MyOffers />} />
         </Routes>
     )
 }

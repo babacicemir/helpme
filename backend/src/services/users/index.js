@@ -1,5 +1,4 @@
 const usersRepository = require('../../repositories/users')
-console.log('usersRepository:', Object.keys(usersRepository))
 
 const createJob = async(user_id, jobData) => {
     
@@ -331,6 +330,20 @@ const markAllNotificationsAsSeen = async (userId) => {
     return notifications
 }
 
+const getJobsByCategory = async (categoryId) => {
+    const category = await usersRepository.getCategoryById(categoryId)
+
+    if(!category){
+        const error = new Error('Category not found')
+        error.statusCode=404
+        throw error
+    }
+
+    const jobs = await usersRepository.getJobsByCategory(categoryId)
+
+    return jobs
+}
+
 
 module.exports = {
     createJob,
@@ -357,5 +370,6 @@ module.exports = {
     getNotificationsByUser,
     markNotificationAsSeen,
     markAllNotificationsAsSeen,
-    getUnseenNotificationsByUser
+    getUnseenNotificationsByUser,
+    getJobsByCategory
 }

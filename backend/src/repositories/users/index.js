@@ -440,6 +440,51 @@ const markAllNotificationsAsSeen = async (userId) => {
     return result.rows
 }
 
+const getJobsByCategory = async (categoryId) => {
+    const query = `
+        SELECT
+            j.id,
+            j.user_id,
+            j.category_id,
+            c.name AS category_name,
+            j.title,
+            j.description,
+            j.budget,
+            j.deadline,
+            j.location,
+            j.status,
+            j.created_at,
+            j.updated_at,
+            u.username,
+            u.first_name,
+            u.last_name
+        FROM jobs AS j
+        JOIN categories AS c
+            ON j.category_id = c.id
+        JOIN users_db AS u
+            ON j.user_id = u.id
+        WHERE j.category_id = $1
+        AND j.status = 'OPEN'
+        ORDER BY j.created_at DESC
+    `
+
+    const values = [categoryId]
+
+    const result = await pool.query(query, values)
+
+    return result.rows
+}
+
+const getCategoryById = async (categoryId) => {
+    const query = `SELECT id, name FROM categories WHERE id = $1`
+
+    const values = [categoryId]
+
+    const result = await pool.query(query, values)
+
+    return result.rows[0]
+}
+
 
 
 module.exports = { 
@@ -474,5 +519,7 @@ module.exports = {
     getNotificationsByUser,
     markNotificationAsSeen,
     markAllNotificationsAsSeen,
-    getUnseenNotificationsByUser
+    getUnseenNotificationsByUser,
+    getJobsByCategory,
+    getCategoryById
 }

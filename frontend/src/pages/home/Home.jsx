@@ -1,49 +1,23 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getLatestJobs } from '../../services/userService'
+import { getLatestJobs, getCategories } from '../../services/userService'
 
 function Home() {
 
     const navigate = useNavigate()
 
     const [jobs, setJobs] = useState([])
-    const [loadingJobs, setLoadingJobs] = useState(true)
-    const [jobsError, setJobsError] = useState('')
+    const [categories, setCategories] = useState([])
+    const [selectedCategory, setSelectedCategory] = useState('')
 
-    const categories = [
-        {
-            id: 1,
-            name: 'Programming',
-            description: 'Web development, software and technical help'
-        },
-        {
-            id: 2,
-            name: 'Design',
-            description: 'Graphic design, UI/UX and creative work'
-        },
-        {
-            id: 3,
-            name: 'Home Repair',
-            description: 'Repairs, maintenance and household work'
-        },
-        {
-            id: 4,
-            name: 'Cleaning',
-            description: 'Cleaning and household assistance'
-        },
-        {
-            id: 5,
-            name: 'Moving',
-            description: 'Moving, transportation and carrying'
-        },
-        {
-            id: 6,
-            name: 'Auto & Mechanics',
-            description: 'Car repairs, maintenance and mechanics'
-        }
-    ]
+    const [loadingJobs, setLoadingJobs] = useState(true)
+    const [loadingCategories, setLoadingCategories] = useState(true)
+
+    const [jobsError, setJobsError] = useState('')
+    const [categoriesError, setCategoriesError] = useState('')
 
     useEffect(() => {
+        // ovdje dohvatamo posljednje objavljene poslove
         const loadJobs = async () => {
             try {
                 const response = await getLatestJobs()
@@ -60,6 +34,34 @@ function Home() {
 
         loadJobs()
     }, [])
+
+    useEffect(() => {
+        // ovdje dohvatamo kategorije iz baze
+        const loadCategories = async () => {
+            try {
+                const response = await getCategories()
+
+                setCategories(response.data)
+            } catch (error) {
+                console.error('CATEGORIES ERROR:', error)
+
+                setCategoriesError('Failed to load categories')
+            } finally {
+                setLoadingCategories(false)
+            }
+        }
+
+        loadCategories()
+    }, [])
+
+    // ovdje korisnika šaljemo na poslove odabrane kategorije
+    const handleFindJobs = () => {
+        if (!selectedCategory) {
+            return
+        }
+
+        navigate(`/category-jobs?categoryId=${selectedCategory}`)
+    }
 
     const getTimeAgo = (date) => {
         const now = new Date()
@@ -115,8 +117,6 @@ function Home() {
     return (
         <div>
 
-            {/* Hero */}
-
             <section className="bg-primary text-white py-5">
                 <div className="container py-5">
 
@@ -163,58 +163,74 @@ function Home() {
             </section>
 
 
-            {/* Popular Categories */}
-
             <section className="py-5">
 
                 <div className="container">
 
-                    <div className="text-center mb-5">
+                    <div className="text-center mb-4">
 
                         <h2 className="fw-bold">
-                            Popular Categories
+                            Find Jobs by Category
                         </h2>
 
-                        <p className="text-muted">
-                            Find help across different types of tasks
+                        <p className="text-muted mb-0">
+                            Choose a category and find jobs that match your interests
                         </p>
 
                     </div>
 
-                    <div className="row g-4">
+                    <div className="row justify-content-center">
 
-                        {categories.map((category) => (
-                            <div
-                                className="col-md-6 col-lg-4"
-                                key={category.id}
-                            >
+                        <div className="col-lg-8">
 
-                                <div
-                                    className="card border-0 shadow-sm h-100"
-                                    style={{ cursor: 'pointer' }}
-                                    onClick={() =>
-                                        navigate(
-                                            `/jobs?category=${category.id}`
-                                        )
-                                    }
-                                >
+                            {categoriesError ? (
 
-                                    <div className="card-body p-4">
+                                <div className="alert alert-danger text-center">
+                                    {categoriesError}
+                                </div>
 
-                                        <h5 className="fw-bold mb-3">
-                                            {category.name}
-                                        </h5>
+                            ) : (
 
-                                        <p className="text-muted mb-0">
-                                            {category.description}
-                                        </p>
+                                <div className="d-flex flex-column flex-sm-row gap-3">
 
-                                    </div>
+                                    <select
+                                        className="form-select form-select-lg"
+                                        value={selectedCategory}
+                                        onChange={(event) =>
+                                            setSelectedCategory(event.target.value)
+                                        }
+                                        disabled={loadingCategories}
+                                    >
+                                        <option value="">
+                                            {loadingCategories
+                                                ? 'Loading categories...'
+                                                : 'Select a category'}
+                                        </option>
+
+                                        {categories.map((category) => (
+                                            <option
+                                                key={category.id}
+                                                value={category.id}
+                                            >
+                                                {category.name}
+                                            </option>
+                                        ))}
+
+                                    </select>
+
+                                    <button
+                                        className="btn btn-primary btn-lg px-4"
+                                        onClick={handleFindJobs}
+                                        disabled={!selectedCategory}
+                                    >
+                                        Find Jobs
+                                    </button>
 
                                 </div>
 
-                            </div>
-                        ))}
+                            )}
+
+                        </div>
 
                     </div>
 
@@ -223,8 +239,6 @@ function Home() {
             </section>
 
 
-            {/* Latest Jobs */}
-
             <section className="py-5 bg-light">
 
                 <div className="container">
@@ -232,6 +246,7 @@ function Home() {
                     <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5">
 
                         <div>
+
                             <h2 className="fw-bold mb-2">
                                 Latest Jobs
                             </h2>
@@ -239,6 +254,7 @@ function Home() {
                             <p className="text-muted mb-0">
                                 Recently posted jobs from the HelpMe.ba community
                             </p>
+
                         </div>
 
                         <button
@@ -382,8 +398,6 @@ function Home() {
             </section>
 
 
-            {/* How HelpMe.ba Works */}
-
             <section className="py-5">
 
                 <div className="container">
@@ -477,8 +491,6 @@ function Home() {
             </section>
 
 
-            {/* CTA */}
-
             <section className="py-5 bg-primary text-white">
 
                 <div className="container">
@@ -536,3 +548,4 @@ function Home() {
 }
 
 export default Home
+
