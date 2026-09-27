@@ -402,6 +402,92 @@ const updateJob = async (req, res, next) => {
     }
 }
 
+const createNotification = async (req, res, next) => {
+    try {
+        const {
+            userId,
+            type,
+            title,
+            message,
+            relatedId
+        } = req.body
+
+        const notification =await userService.createNotification(
+                userId,
+                type,
+                title,
+                message,
+                relatedId
+            )
+
+        res.status(201).json({
+            message: 'Notification created successfully',
+            data: notification
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+const getNotifications = async (req, res, next) => {
+    try {
+        const userId = req.user.id 
+        const notifications = await userService.getNotificationsByUser(userId)
+
+        res.status(200).json({
+            message: 'Notifications retrieved successfully',
+            data: notifications
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+const getUnseenNotifications = async (req, res, next) => {
+    try {
+        const userId = req.user.id
+
+        const notifications =await userService.getUnseenNotificationsByUser(userId)
+
+        res.status(200).json({
+            message: 'Unseen notifications retrieved successfully',
+            data: notifications
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+const markNotificationAsSeen = async (req, res, next) => {
+    try {
+        const userId = req.user.id
+        const notificationId = req.params.id
+        const notification =await userService.markNotificationAsSeen(notificationId, userId)
+
+        res.status(200).json({
+            message: 'Notification marked as seen',
+            data: notification
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+const markAllNotificationsAsSeen = async (req, res, next) => {
+    try {
+        const userId = req.user.id
+
+        const notifications =await userService.markAllNotificationsAsSeen(userId)
+
+        res.status(200).json({
+            message: 'All notifications marked as seen',
+            data: notifications
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
 
 module.exports = {
     createUser,
@@ -425,5 +511,10 @@ module.exports = {
     getUserOffers,
     getLatestJobs,
     getAllCategories,
-    updateJob
+    updateJob,
+    createNotification,
+    getNotifications,
+    getUnseenNotifications,
+    markAllNotificationsAsSeen,
+    markNotificationAsSeen
 }

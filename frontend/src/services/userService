@@ -88,6 +88,41 @@ const deleteJob = async (jobId) => {
     return response.data
 }
 
+const getOffersByJob = async (jobId) => {
+    const response = await api.get(`/helpme.ba/job/offers/${jobId}`)
+    return response.data
+}
+
+const acceptOffer = async (offerId) => {
+    const response = await api.patch(`/helpme.ba/job/offer/accept/${offerId}`)
+    return response.data
+}
+
+const rejectOffer = async (offerId) => {
+    const response = await api.patch(`/helpme.ba/job/offer/reject/${offerId}`)
+    return response.data
+}
+
+const getNotifications = async () => {
+    const response = await api.get('/helpme.ba/notifications')
+    return response.data
+}
+
+const getUnseenNotifications = async () => {
+    const response = await api.get('/helpme.ba/notifications/unseen')
+    return response.data
+}
+
+const markNotificationAsSeen = async (notificationId) => {
+    const response = await api.patch(`/helpme.ba/notifications/${notificationId}/seen`)
+    return response.data
+}
+
+const markAllNotificationsAsSeen = async () => {
+    const response = await api.patch('/helpme.ba/notifications/seen-all')
+    return response.data
+}
+
 export {
     getLatestJobs,
     getMessagesByJob,
@@ -98,5 +133,12 @@ export {
     getCategories,
     createJob,
     updateJob,
-    deleteJob
+    deleteJob,
+    getOffersByJob,
+    acceptOffer,
+    rejectOffer,
+    getNotifications,
+    getUnseenNotifications,
+    markAllNotificationsAsSeen,
+    markNotificationAsSeen
 }

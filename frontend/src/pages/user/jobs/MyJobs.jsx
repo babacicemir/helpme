@@ -6,6 +6,7 @@ import {
     updateJob,
     deleteJob
 } from '../../../services/userService'
+import OffersModal from '../offers/OffersModal'
 
 function MyJobs() {
     const [jobs, setJobs] = useState([])
@@ -16,6 +17,9 @@ function MyJobs() {
 
     const [selectedJob, setSelectedJob] = useState(null)
     const [deleting, setDeleting] = useState(false)
+
+    const [showOffersModal, setShowOffersModal] = useState(false)
+    const [selectedOffersJob, setSelectedOffersJob] = useState(null)
 
     const [showCreateModal, setShowCreateModal] = useState(false)
     const [creatingJob, setCreatingJob] = useState(false)
@@ -67,6 +71,16 @@ function MyJobs() {
 
     const closeJobModal = () => {
         setSelectedJob(null)
+    }
+
+    const openOffersModal = (job) => {
+        setSelectedOffersJob(job)
+        setShowOffersModal(true)
+    }
+
+    const closeOffersModal = () => {
+        setShowOffersModal(false)
+        setSelectedOffersJob(null)
     }
 
     const openCreateModal = () => {
@@ -374,14 +388,27 @@ function MyJobs() {
                                             </div>
                                         </div>
 
-                                        <button
-                                            className="btn btn-primary w-100"
-                                            onClick={() =>
-                                                openJobModal(job)
-                                            }
-                                        >
-                                            View
-                                        </button>
+                                        <div className="d-flex gap-2">
+                                            <button
+                                                type="button"
+                                                className="btn btn-primary flex-fill"
+                                                onClick={() =>
+                                                    openJobModal(job)
+                                                }
+                                            >
+                                                View
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                className="btn btn-outline-primary flex-fill"
+                                                onClick={() =>
+                                                    openOffersModal(job)
+                                                }
+                                            >
+                                                Offers
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -534,6 +561,13 @@ function MyJobs() {
                         onClick={closeJobModal}
                     />
                 </>
+            )}
+
+            {showOffersModal && selectedOffersJob && (
+                <OffersModal
+                    job={selectedOffersJob}
+                    onClose={closeOffersModal}
+                />
             )}
 
             {showCreateModal && (
@@ -984,5 +1018,3 @@ function MyJobs() {
 }
 
 export default MyJobs
-
-

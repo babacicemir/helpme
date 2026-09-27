@@ -75,8 +75,8 @@ const getOffersByJob = async(job_id, user_id) => {
     return result.rows
 }
 
-const acceptOffer = async(offerId, userId) => {
-    const query =  `
+const acceptOffer = async (offerId, userId) => {
+    const query = `
         UPDATE offers AS o
         SET
             status = 'ACCEPTED',
@@ -86,10 +86,22 @@ const acceptOffer = async(offerId, userId) => {
         AND o.job_id = j.id
         AND j.user_id = $2
         AND o.status = 'PENDING'
-        RETURNING *
+        RETURNING
+            o.id,
+            o.job_id,
+            o.user_id,
+            o.price,
+            o.delivery_days,
+            o.message,
+            o.status,
+            o.created_at,
+            o.updated_at
     `
+
     const values = [offerId, userId]
+
     const result = await pool.query(query, values)
+
     return result.rows[0]
 }
 
@@ -104,7 +116,16 @@ const rejectOffer = async(offerId, userId) => {
         AND o.job_id = j.id
         AND j.user_id = $2
         AND o.status = 'PENDING'
-        RETURNING *
+        RETURNING 
+            o.id,
+            o.job_id,
+            o.user_id,
+            o.price,
+            o.delivery_days,
+            o.message,
+            o.status,
+            o.created_at,
+            o.updated_at
     `
     const values = [offerId, userId]
     const result = await pool.query(query, values)
@@ -113,7 +134,7 @@ const rejectOffer = async(offerId, userId) => {
 
 const deleteOffer = async(offerId, userId) => {
     const query = 'DELETE FROM offers WHERE id=$1 AND user_id=$2 AND status=$3 RETURNING *'
-    values = [offerId, userId, 'PENDING']
+    const values = [offerId, userId, 'PENDING']
     const result = await pool.query(query, values)
     return result.rows[0]
 }
@@ -305,6 +326,122 @@ const updateJob = async (jobId, userId, jobData) => {
     return result.rows[0]
 }
 
+const createNotification = async (
+    userId,
+    type,
+    title,
+    message,
+    relatedId = null
+) => {
+    const query = `
+        INSERT INTO notifications (
+            user_id,
+            type,
+            title,
+            message,
+            related_id
+        )
+        VALUES ($1, $2, $3, $4, $5)
+        RETURNING *
+    `
+
+    const values = [
+        userId,
+        type,
+        title,
+        message,
+        relatedId
+    ]
+
+    const result = await pool.query(query, values)
+
+    return result.rows[0]
+}
+
+const getNotificationsByUser = async (userId) => {
+    const query = `
+        SELECT
+            id,
+            user_id,
+            type,
+            title,
+            message,
+            related_id,
+            is_seen,
+            created_at
+        FROM notifications
+        WHERE user_id = $1
+        ORDER BY created_at DESC
+    `
+
+    const values = [userId]
+
+    const result = await pool.query(query, values)
+
+    return result.rows
+}
+
+const getUnseenNotificationsByUser = async (userId) => {
+    const query = `
+        SELECT
+            id,
+            user_id,
+            type,
+            title,
+            message,
+            related_id,
+            is_seen,
+            created_at
+        FROM notifications
+        WHERE user_id = $1
+        AND is_seen = FALSE
+        ORDER BY created_at DESC
+    `
+
+    const values = [userId]
+
+    const result = await pool.query(query, values)
+
+    return result.rows
+}
+
+const markNotificationAsSeen = async (notificationId, userId) => {
+    const query = `
+        UPDATE notifications
+        SET is_seen = TRUE
+        WHERE id = $1
+        AND user_id = $2
+        RETURNING *
+    `
+
+    const values = [
+        notificationId,
+        userId
+    ]
+
+    const result = await pool.query(query, values)
+
+    return result.rows[0]
+}
+
+const markAllNotificationsAsSeen = async (userId) => {
+    const query = `
+        UPDATE notifications
+        SET is_seen = TRUE
+        WHERE user_id = $1
+        AND is_seen = FALSE
+        RETURNING *
+    `
+
+    const values = [userId]
+
+    const result = await pool.query(query, values)
+
+    return result.rows
+}
+
+
+
 module.exports = { 
     findUserByUsernameEmail,
     getAllUsers,
@@ -332,5 +469,10 @@ module.exports = {
     getMyOffers,
     getLatestJobs,
     getAllCategories,
-    updateJob
+    updateJob,
+    createNotification,
+    getNotificationsByUser,
+    markNotificationAsSeen,
+    markAllNotificationsAsSeen,
+    getUnseenNotificationsByUser
 }

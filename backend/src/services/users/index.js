@@ -1,4 +1,5 @@
 const usersRepository = require('../../repositories/users')
+console.log('usersRepository:', Object.keys(usersRepository))
 
 const createJob = async(user_id, jobData) => {
     
@@ -41,6 +42,19 @@ const acceptOffer = async(userId, offerId) => {
         error.statusCode = 404
         throw error
     }
+    console.log('JWT userId:', userId)
+    console.log('Accepted offer:', acceptedOffer)
+    console.log('Notification recipient:', acceptedOffer.user_id)
+
+
+    await usersRepository.createNotification(
+        acceptedOffer.user_id,
+        'OFFER_ACCEPTED',
+        'Offer accepted',
+        'Your offer has been accepted.',
+        acceptedOffer.id
+    )
+
     return acceptedOffer
 }
 
@@ -51,6 +65,15 @@ const rejectOffer = async(userId, offerId) => {
         error.statusCode = 404
         throw error
     }
+
+    await usersRepository.createNotification(
+        rejectedOffer.user_id,
+        'OFFER_REJECTED',
+        'Offer rejected',
+        'Your offer has been rejected.',
+        rejectedOffer.id
+    )
+
     return rejectedOffer
 }
 
@@ -232,6 +255,83 @@ const updateJob = async (jobId, userId, jobData) => {
 }
 
 
+const createNotification = async (
+    userId,
+    type,
+    title,
+    message,
+    relatedId = null
+) => {
+    const user = await usersRepository.getUserById(userId)
+
+    if (!user) {
+        const error = new Error('User not found')
+        error.statusCode = 404
+        throw error
+    }
+
+    const notification = await usersRepository.createNotification(
+            userId,
+            type,
+            title,
+            message,
+            relatedId
+        )
+
+    return notification
+}
+
+const getNotificationsByUser = async (userId) => {
+    const user = await usersRepository.getUserById(userId)
+
+    if (!user) {
+        const error = new Error('User not found')
+        error.statusCode = 404
+        throw error
+    }
+
+    const notification = await usersRepository.getNotificationsByUser(userId)
+    return notification
+}
+
+const getUnseenNotificationsByUser = async (userId) => {
+    const user = await usersRepository.getUserById(userId)
+
+    if (!user) {
+        const error = new Error('User not found')
+        error.statusCode = 404
+        throw error
+    }
+
+    const notification = await usersRepository.getUnseenNotificationsByUser(userId)
+
+    return notification
+}
+
+const markNotificationAsSeen = async (
+    notificationId,
+    userId
+) => {
+    const notification = await usersRepository.markNotificationAsSeen( notificationId, userId )
+
+    if (!notification) {
+        const error = new Error(
+            'Notification not found'
+        )
+
+        error.statusCode = 404
+        throw error
+    }
+
+    return notification
+}
+
+const markAllNotificationsAsSeen = async (userId) => {
+    const notifications = await usersRepository.markAllNotificationsAsSeen(userId)
+    return notifications
+}
+
+
 module.exports = {
     createJob,
     getUserJobs,
@@ -252,5 +352,10 @@ module.exports = {
     getUserOffers,
     getLatestJobs,
     getAllCategories,
-    updateJob
+    updateJob,
+    createNotification,
+    getNotificationsByUser,
+    markNotificationAsSeen,
+    markAllNotificationsAsSeen,
+    getUnseenNotificationsByUser
 }

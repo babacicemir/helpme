@@ -28,5 +28,10 @@ router.post('/user/:userId/review', checkJWT, User.createReview)
 router.get('/user/reviews/received', checkJWT, User.getAllReceivedReviews)
 router.get('/user/reviews/given', checkJWT, User.getAllGivenReviews)
 router.get('/categories', checkJWT, User.getAllCategories)
+router.post('/notifications', checkJWT, User.createNotification)
+router.get('/notifications', checkJWT, User.getNotifications)
+router.get('/notifications/unseen', checkJWT, User.getUnseenNotifications)
+router.patch('/notifications/:id/seen', checkJWT, User.markNotificationAsSeen)
+router.patch('/notifications/seen-all', checkJWT, User.markAllNotificationsAsSeen)
 
 module.exports = router
