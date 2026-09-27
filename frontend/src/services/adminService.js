@@ -6,8 +6,8 @@ const getAllUsers = async () => {
     return response.data
 }
 
-const blockUser = async (id) => {
-    const response = await api.patch(`/helpme.ba/admin/users/block/${id}`)
+const blockUser = async (id, reasonId, message) => {
+    const response = await api.patch(`/helpme.ba/admin/users/block/${id}`, {reasonId, message})
 
     return response.data
 }

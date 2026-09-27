@@ -133,13 +133,21 @@ const getRecentActivity = async () => {
     return activities
 }
 
-const blockUser = async(userId) => {
+const blockUser = async (userId, reasonId, message) => {
     const user = await adminRepository.blockUser(userId)
-    if(!user){
+
+    if (!user) {
         const error = new Error('User not found!')
         error.statusCode = 404
         throw error
     }
+
+    await adminRepository.createBlockedUser(
+        userId,
+        reasonId,
+        message
+    )
+
     return user
 }
 

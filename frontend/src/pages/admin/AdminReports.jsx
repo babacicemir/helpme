@@ -1,8 +1,5 @@
 import { useEffect, useState } from 'react'
-import {
-    getAllReports,
-    blockUser
-} from '../../services/adminService'
+import { getAllReports, blockUser } from '../../services/adminService'
 
 function AdminReports() {
     const [reports, setReports] = useState([])
@@ -53,7 +50,9 @@ function AdminReports() {
             setSuccess('')
 
             await blockUser(
-                selectedReport.reported_user_id
+                selectedReport.reported_user_id,
+                selectedReport.reason_id,
+                selectedReport.description
             )
 
             setSuccess(

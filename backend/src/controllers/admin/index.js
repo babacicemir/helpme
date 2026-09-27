@@ -162,15 +162,18 @@ const getAllReports = async(req, res, next) => {
 const blockUser = async (req, res, next) => {
     try {
         const { id } = req.params
-        console.log("id", id)
+        const { reasonId, message } = req.body
 
+        const user = await adminService.blockUser(
+            id,
+            reasonId,
+            message
+        )
 
-        const user = await adminService.blockUser(id)
-        console.log(user)
         return res.status(200).json({
             success: true,
             message: 'User blocked successfully',
-            data: user,
+            data: user
         })
     } catch (error) {
         next(error)

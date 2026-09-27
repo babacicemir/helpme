@@ -352,6 +352,24 @@ const getRecentActivity = async () => {
     return result.rows
 }
 
+const createBlockedUser = async (userId, reasonId, message) => {
+    const query = `
+        INSERT INTO blocked_users (
+            user_id,
+            reason_id,
+            message
+        )
+        VALUES ($1, $2, $3)
+        RETURNING *
+    `
+
+    const values = [userId, reasonId, message]
+
+    const result = await pool.query(query, values)
+
+    return result.rows[0]
+}
+
 module.exports = {
     getAllUsers, 
     deleteUser,
@@ -369,5 +387,6 @@ module.exports = {
     unBlockUser,
     getBlockedUsers,
     getDashboardStats,
-    getRecentActivity
+    getRecentActivity,
+    createBlockedUser
 }
