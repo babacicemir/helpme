@@ -1,24 +1,31 @@
-import { createContext, useContext, useState } from 'react'
+import { createContext, useState } from 'react'
+import { logout as logoutUser } from '../services/authService'
 
 const AuthContext = createContext()
 
-function AuthProvider({ children }){
+function AuthProvider({ children }) {
     const [user, setUser] = useState(null)
 
     const login = (userData) => {
         setUser(userData)
     }
 
-    const logout = () => {
-        setUser(null)
+    const logout = async () => {
+        try {
+            await logoutUser()
+        } catch (error) {
+            console.error('LOGOUT ERROR:', error)
+        } finally {
+            setUser(null)
+        }
     }
 
-    return(
+    return (
         <AuthContext.Provider
             value={{
                 user,
                 login,
-                logout 
+                logout
             }}
         >
             {children}

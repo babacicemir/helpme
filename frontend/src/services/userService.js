@@ -137,6 +137,7 @@ const getUserOffers = async () => {
 
 
 
+
 export {
     getLatestJobs,
     getMessagesByJob,
@@ -156,6 +157,6 @@ export {
     markAllNotificationsAsSeen,
     markNotificationAsSeen,
     getJobsByCategory,
-    getUserOffers
+    getUserOffers,
     
 }

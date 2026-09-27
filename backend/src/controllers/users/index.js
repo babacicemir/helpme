@@ -502,6 +502,23 @@ const getJobsByCategory = async(req, res, next) => {
     }
 }
 
+const logout = async (req, res, next) => {
+    try{
+        res.clearCookie('token', {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict'
+        })
+
+        return res.status(200).json({
+            success: true,
+            message: 'Logged out successfully'
+        })
+    }catch(error){
+        next(error)
+    }
+}
+
 
 module.exports = {
     createUser,
@@ -531,5 +548,6 @@ module.exports = {
     getUnseenNotifications,
     markAllNotificationsAsSeen,
     markNotificationAsSeen,
-    getJobsByCategory
+    getJobsByCategory,
+    logout
 }

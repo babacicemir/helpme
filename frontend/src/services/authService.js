@@ -21,7 +21,14 @@ const login = async (credentials) => {
     return response.data
 }
 
+const logout = async () => {
+    const response = await api.post('/helpme.ba/logout')
+
+    return response.data
+}
+
 export {
     signup,
-    login
+    login,
+    logout
 }
