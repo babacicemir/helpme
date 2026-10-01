@@ -4,111 +4,118 @@ import useAuth from '../../hooks/useAuth'
 import NotificationsModal from '../../pages/notifications/NotificationsModal'
 
 function Navbar() {
-    const { user, logout } = useAuth()
-    const [showNotifications, setShowNotifications] = useState(false)
+const { user, logout } = useAuth()
+const [showNotifications, setShowNotifications] = useState(false)
 
-    return (
-        <>
-            <nav className="navbar navbar-expand-lg bg-white border-bottom">
-                <div className="container">
-                    <Link
-                        className="navbar-brand fw-bold"
-                        to="/"
-                    >
-                        HelpMe.ba
-                    </Link>
+return (
+    <>
+        <nav className="navbar navbar-expand-lg bg-white">
+            <div className="container py-2">
 
-                    <div className="d-flex align-items-center gap-3">
-                        {user ? (
-                            user.role === 'ADMIN' ? (
-                                <>
-                                    <button
-                                        type="button"
-                                        className="btn btn-link nav-link p-0"
-                                    >
-                                        <i className="bi bi-person-circle fs-5" />
-                                    </button>
+                <Link
+                    className="navbar-brand fw-bold text-primary fs-4"
+                    to="/"
+                >
+                    HelpMe.ba
+                </Link>
 
-                                    <button
-                                        type="button"
-                                        className="btn btn-outline-danger"
-                                        onClick={logout}
-                                    >
-                                        Logout
-                                    </button>
-                                </>
-                            ) : (
-                                <>
-                                    <Link
-                                        className="nav-link"
-                                        to="/my-jobs"
-                                    >
-                                        My Jobs
-                                    </Link>
+                <div className="d-flex align-items-center gap-3">
 
-                                    <Link
-                                        className="nav-link"
-                                        to="/my-offers"
-                                    >
-                                        My Offers
-                                    </Link>
+                    {user ? (
+                        user.role === 'ADMIN' ? (
+                            <>
+                                <button
+                                    type="button"
+                                    className="btn btn-link text-dark p-0"
+                                    aria-label="Profile"
+                                >
+                                    <i className="bi bi-person-circle fs-4" />
+                                </button>
 
-                                    <button
-                                        type="button"
-                                        className="btn btn-link nav-link position-relative p-0"
-                                        onClick={() =>
-                                            setShowNotifications(true)
-                                        }
-                                        aria-label="Notifications"
-                                    >
-                                        <i className="bi bi-bell fs-5" />
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        className="btn btn-link nav-link p-0"
-                                        aria-label="Profile"
-                                    >
-                                        <i className="bi bi-person-circle fs-5" />
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        className="btn btn-outline-danger"
-                                        onClick={logout}
-                                    >
-                                        Logout
-                                    </button>
-                                </>
-                            )
+                                <button
+                                    type="button"
+                                    className="btn btn-outline-danger px-3"
+                                    onClick={logout}
+                                >
+                                    Logout
+                                </button>
+                            </>
                         ) : (
                             <>
                                 <Link
-                                    className="btn btn-outline-primary"
-                                    to="/login"
+                                    className="nav-link fw-medium"
+                                    to="/my-jobs"
                                 >
-                                    Login
+                                    My Jobs
                                 </Link>
 
                                 <Link
-                                    className="btn btn-primary"
-                                    to="/signup"
+                                    className="nav-link fw-medium"
+                                    to="/my-offers"
                                 >
-                                    Sign up
+                                    My Offers
                                 </Link>
-                            </>
-                        )}
-                    </div>
-                </div>
-            </nav>
 
-            {showNotifications && (
-                <NotificationsModal
-                    onClose={() => setShowNotifications(false)}
-                />
-            )}
-        </>
-    )
+                                <button
+                                    type="button"
+                                    className="btn btn-link text-dark p-0 position-relative"
+                                    onClick={() =>
+                                        setShowNotifications(true)
+                                    }
+                                    aria-label="Notifications"
+                                >
+                                    <i className="bi bi-bell fs-5" />
+                                </button>
+
+                                <button
+                                    type="button"
+                                    className="btn btn-link text-dark p-0"
+                                    aria-label="Profile"
+                                >
+                                    <i className="bi bi-person-circle fs-5" />
+                                </button>
+
+                                <button
+                                    type="button"
+                                    className="btn btn-outline-danger px-3"
+                                    onClick={logout}
+                                >
+                                    Logout
+                                </button>
+                            </>
+                        )
+                    ) : (
+                        <>
+                            <Link
+                                className="btn btn-outline-primary px-3"
+                                to="/login"
+                            >
+                                Login
+                            </Link>
+
+                            <Link
+                                className="btn btn-primary px-3"
+                                to="/signup"
+                            >
+                                Sign up
+                            </Link>
+                        </>
+                    )}
+
+                </div>
+
+            </div>
+        </nav>
+
+        {showNotifications && (
+            <NotificationsModal
+                onClose={() => setShowNotifications(false)}
+            />
+        )}
+    </>
+)
+
 }
 
 export default Navbar
+

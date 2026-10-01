@@ -4,51 +4,54 @@ import { useNavigate } from 'react-router-dom'
 import { signup } from '../../services/authService'
 
 function Signup() {
-    const navigate = useNavigate()
-    const [serverErrors, setServerErrors] = useState([])
-    const [successMessage, setSuccessMessage] = useState('')
+const navigate = useNavigate()
+const [serverErrors, setServerErrors] = useState([])
+const [successMessage, setSuccessMessage] = useState('')
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors, isSubmitting }
-    } = useForm()
+const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm()
 
-    const onSubmit = async (data) => {
-        setServerErrors([])
-        setSuccessMessage('')
+const onSubmit = async (data) => {
+    setServerErrors([])
+    setSuccessMessage('')
 
-        try {
-            const response = await signup(data)
+    try {
+        const response = await signup(data)
 
-            console.log('SIGNUP RESPONSE:', response)
+        console.log('SIGNUP RESPONSE:', response)
 
-            setSuccessMessage(
-                'Your account has been successfully created! Redirecting to login...'
-            )
+        setSuccessMessage(
+            'Your account has been successfully created! Redirecting to login...'
+        )
 
-            setTimeout(() => {
-                navigate('/login')
-            }, 2000)
-        } catch (error) {
-            console.error('SIGNUP ERROR:', error)
+        setTimeout(() => {
+            navigate('/login')
+        }, 2000)
+    } catch (error) {
+        console.error('SIGNUP ERROR:', error)
 
-            setServerErrors(
-                error.response?.data?.errors || [
-                    error.response?.data?.message ||
-                    'Something went wrong'
-                ]
-            )
-        }
+        setServerErrors(
+            error.response?.data?.errors || [
+                error.response?.data?.message ||
+                'Something went wrong'
+            ]
+        )
     }
+}
 
-    return (
-        <div className="container py-5">
+return (
+    <div className="bg-primary min-vh-100 d-flex align-items-center py-5">
+
+        <div className="container">
+
             <div className="row justify-content-center">
+
                 <div className="col-md-8 col-lg-6">
-                    <div className="card shadow-sm">
-                        <div className="card-body p-4">
-                            <h2 className="text-center mb-4">
+
+                    <div className="card border-0 shadow">
+
+                        <div className="card-body p-4 p-md-5">
+
+                            <h2 className="text-center fw-bold text-primary mb-4">
                                 Create Account
                             </h2>
 
@@ -73,15 +76,18 @@ function Signup() {
                             )}
 
                             <form onSubmit={handleSubmit(onSubmit)}>
+
                                 <div className="row">
+
                                     <div className="col-md-6 mb-3">
-                                        <label className="form-label">
+
+                                        <label className="form-label text-primary fw-medium">
                                             First Name
                                         </label>
 
                                         <input
                                             type="text"
-                                            className={`form-control ${
+                                            className={`form-control text-primary ${
                                                 errors.firstName
                                                     ? 'is-invalid'
                                                     : ''
@@ -107,16 +113,18 @@ function Signup() {
                                                 {errors.firstName.message}
                                             </div>
                                         )}
+
                                     </div>
 
                                     <div className="col-md-6 mb-3">
-                                        <label className="form-label">
+
+                                        <label className="form-label text-primary fw-medium">
                                             Last Name
                                         </label>
 
                                         <input
                                             type="text"
-                                            className={`form-control ${
+                                            className={`form-control text-primary ${
                                                 errors.lastName
                                                     ? 'is-invalid'
                                                     : ''
@@ -142,17 +150,20 @@ function Signup() {
                                                 {errors.lastName.message}
                                             </div>
                                         )}
+
                                     </div>
+
                                 </div>
 
                                 <div className="mb-3">
-                                    <label className="form-label">
+
+                                    <label className="form-label text-primary fw-medium">
                                         Username
                                     </label>
 
                                     <input
                                         type="text"
-                                        className={`form-control ${
+                                        className={`form-control text-primary ${
                                             errors.username
                                                 ? 'is-invalid'
                                                 : ''
@@ -183,16 +194,18 @@ function Signup() {
                                             {errors.username.message}
                                         </div>
                                     )}
+
                                 </div>
 
                                 <div className="mb-3">
-                                    <label className="form-label">
+
+                                    <label className="form-label text-primary fw-medium">
                                         Email
                                     </label>
 
                                     <input
                                         type="email"
-                                        className={`form-control ${
+                                        className={`form-control text-primary ${
                                             errors.email
                                                 ? 'is-invalid'
                                                 : ''
@@ -214,16 +227,18 @@ function Signup() {
                                             {errors.email.message}
                                         </div>
                                     )}
+
                                 </div>
 
                                 <div className="mb-3">
-                                    <label className="form-label">
+
+                                    <label className="form-label text-primary fw-medium">
                                         Password
                                     </label>
 
                                     <input
                                         type="password"
-                                        className={`form-control ${
+                                        className={`form-control text-primary ${
                                             errors.password
                                                 ? 'is-invalid'
                                                 : ''
@@ -256,22 +271,24 @@ function Signup() {
                                         </div>
                                     )}
 
-                                    <div className="form-text">
+                                    <div className="form-text text-primary">
                                         Password must contain at least 8
                                         characters, one uppercase letter,
                                         one lowercase letter, one number
                                         and one special character.
                                     </div>
+
                                 </div>
 
                                 <div className="mb-3">
-                                    <label className="form-label">
+
+                                    <label className="form-label text-primary fw-medium">
                                         Location
                                     </label>
 
                                     <input
                                         type="text"
-                                        className={`form-control ${
+                                        className={`form-control text-primary ${
                                             errors.location
                                                 ? 'is-invalid'
                                                 : ''
@@ -298,15 +315,17 @@ function Signup() {
                                             {errors.location.message}
                                         </div>
                                     )}
+
                                 </div>
 
                                 <div className="mb-3">
-                                    <label className="form-label">
+
+                                    <label className="form-label text-primary fw-medium">
                                         Bio
                                     </label>
 
                                     <textarea
-                                        className={`form-control ${
+                                        className={`form-control text-primary ${
                                             errors.bio
                                                 ? 'is-invalid'
                                                 : ''
@@ -327,16 +346,18 @@ function Signup() {
                                             {errors.bio.message}
                                         </div>
                                     )}
+
                                 </div>
 
                                 <div className="mb-4">
-                                    <label className="form-label">
+
+                                    <label className="form-label text-primary fw-medium">
                                         Profile Image URL
                                     </label>
 
                                     <input
                                         type="url"
-                                        className={`form-control ${
+                                        className={`form-control text-primary ${
                                             errors.profileImg
                                                 ? 'is-invalid'
                                                 : ''
@@ -363,24 +384,34 @@ function Signup() {
                                             {errors.profileImg.message}
                                         </div>
                                     )}
+
                                 </div>
 
                                 <button
                                     type="submit"
-                                    className="btn btn-primary w-100"
+                                    className="btn btn-primary w-100 py-2"
                                     disabled={isSubmitting}
                                 >
                                     {isSubmitting
                                         ? 'Creating account...'
                                         : 'Create Account'}
                                 </button>
+
                             </form>
+
                         </div>
+
                     </div>
+
                 </div>
+
             </div>
+
         </div>
-    )
+
+    </div>
+)
+
 }
 
 export default Signup

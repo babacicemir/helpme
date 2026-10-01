@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import { getUserOffers } from '../../../services/userService'
 
 function MyOffers() {
-
     const navigate = useNavigate()
 
     const [offers, setOffers] = useState([])
@@ -14,9 +13,6 @@ function MyOffers() {
         const loadOffers = async () => {
             try {
                 const response = await getUserOffers()
-
-                console.log('MY OFFERS:', response)
-
 
                 setOffers(response.data)
             } catch (error) {
@@ -34,35 +30,87 @@ function MyOffers() {
         loadOffers()
     }, [])
 
+    const getStatusClass = (status) => {
+        if (status === 'ACCEPTED') {
+            return 'bg-success bg-opacity-10 text-success'
+        }
+
+        if (status === 'REJECTED') {
+            return 'bg-danger bg-opacity-10 text-danger'
+        }
+
+        return 'bg-primary bg-opacity-10 text-primary'
+    }
+
     return (
-        <div>
+        <div className="bg-light min-vh-100 py-5">
 
-            <section className="bg-primary text-white py-5">
-                <div className="container py-4">
+            <div className="container">
 
-                    <div className="text-center">
+                <div className="mb-5">
 
-                        <h1 className="fw-bold mb-3">
-                            My Offers
-                        </h1>
+                    <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3">
 
-                        <p className="lead mb-0">
-                            View all offers you have sent
-                        </p>
+                        <div>
+                            <p className="text-primary fw-semibold mb-2">
+                                Your activity
+                            </p>
+
+                            <h1 className="fw-bold mb-2">
+                                My Offers
+                            </h1>
+
+                            <p className="text-muted mb-0">
+                                View and manage all offers you have sent.
+                            </p>
+                        </div>
+
+                        <div className="bg-white rounded-3 shadow-sm px-4 py-3">
+
+                            <div className="d-flex align-items-center gap-3">
+
+                                <div
+                                    className="bg-primary text-white rounded-3 d-flex align-items-center justify-content-center"
+                                    style={{
+                                        width: '44px',
+                                        height: '44px'
+                                    }}
+                                >
+                                    <i className="bi bi-send fs-5" />
+                                </div>
+
+                                <div>
+                                    <small className="text-muted d-block">
+                                        Total Offers
+                                    </small>
+
+                                    <span className="fw-bold fs-5">
+                                        {offers.length}
+                                    </span>
+                                </div>
+
+                            </div>
+
+                        </div>
 
                     </div>
 
                 </div>
-            </section>
 
+                {loading ? (
 
-            <section className="py-5 bg-light">
+                    <div className="card border-0 shadow-sm">
 
-                <div className="container">
+                        <div className="card-body text-center py-5">
 
-                    {loading ? (
-
-                        <div className="text-center py-5">
+                            <div
+                                className="spinner-border text-primary mb-3"
+                                role="status"
+                            >
+                                <span className="visually-hidden">
+                                    Loading...
+                                </span>
+                            </div>
 
                             <p className="text-muted mb-0">
                                 Loading offers...
@@ -70,19 +118,34 @@ function MyOffers() {
 
                         </div>
 
-                    ) : error ? (
+                    </div>
 
-                        <div className="alert alert-danger">
-                            {error}
-                        </div>
+                ) : error ? (
 
-                    ) : offers.length === 0 ? (
+                    <div className="alert alert-danger border-0 shadow-sm">
+                        <i className="bi bi-exclamation-circle-fill me-2" />
+                        {error}
+                    </div>
 
-                        <div className="text-center py-5">
+                ) : offers.length === 0 ? (
 
-                            <h5 className="fw-bold mb-2">
-                                No offers found
-                            </h5>
+                    <div className="card border-0 shadow-sm">
+
+                        <div className="card-body text-center py-5">
+
+                            <div
+                                className="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3"
+                                style={{
+                                    width: '70px',
+                                    height: '70px'
+                                }}
+                            >
+                                <i className="bi bi-send fs-3" />
+                            </div>
+
+                            <h4 className="fw-bold mb-2">
+                                No Offers Yet
+                            </h4>
 
                             <p className="text-muted mb-0">
                                 You have not sent any offers yet.
@@ -90,65 +153,100 @@ function MyOffers() {
 
                         </div>
 
-                    ) : (
+                    </div>
 
-                        <div className="row g-4">
+                ) : (
 
-                            {offers.map((offer) => (
+                    <div className="row g-4">
+
+                        {offers.map((offer) => (
+
+                            <div
+                                className="col-md-6 col-xl-4"
+                                key={offer.id}
+                            >
 
                                 <div
-                                    className="col-md-6 col-xl-4"
-                                    key={offer.id}
+                                    className="card border-0 shadow-sm h-100"
+                                    style={{
+                                        borderRadius: '14px'
+                                    }}
                                 >
 
-                                    <div className="card border-0 shadow-sm h-100">
+                                    <div className="card-body p-4 d-flex flex-column">
 
-                                        <div className="card-body d-flex flex-column">
+                                        <div className="d-flex justify-content-between align-items-start mb-4">
 
-                                            <div className="d-flex justify-content-between align-items-start mb-3">
+                                            <span
+                                                className={`badge px-3 py-2 ${getStatusClass(
+                                                    offer.status
+                                                )}`}
+                                            >
+                                                <i className="bi bi-circle-fill me-1 small" />
+                                                {offer.status}
+                                            </span>
 
-                                                <span className="badge bg-primary">
-                                                    {offer.status}
+                                            <span className="fw-bold text-primary">
+                                                {offer.price} KM
+                                            </span>
+
+                                        </div>
+
+                                        <h5 className="fw-bold mb-3">
+                                            {offer.job_title}
+                                        </h5>
+
+                                        <p
+                                            className="text-muted mb-4"
+                                            style={{
+                                                minHeight: '48px'
+                                            }}
+                                        >
+                                            {offer.job_description}
+                                        </p>
+
+                                        <div className="border-top pt-3 mt-auto">
+
+                                            <div className="d-flex justify-content-between mb-2">
+
+                                                <span className="text-muted small">
+                                                    <i className="bi bi-clock me-1" />
+                                                    Delivery
                                                 </span>
 
-                                                <span className="fw-semibold">
-                                                    {offer.price} KM
+                                                <span className="fw-semibold small">
+                                                    {offer.delivery_days} days
                                                 </span>
 
                                             </div>
 
-                                            <h5 className="fw-bold mb-3">
-                                                {offer.job_title}
-                                            </h5>
+                                            <div className="d-flex justify-content-between mb-4">
 
-                                            <p className="text-muted mb-3">
-                                                {offer.job_description}
-                                            </p>
+                                                <span className="text-muted small">
+                                                    <i className="bi bi-calendar-event me-1" />
+                                                    Submitted
+                                                </span>
 
-                                            <div className="mt-auto">
-
-                                                <div className="d-flex justify-content-between mb-2">
-
-                                                    <span className="text-muted">
-                                                        Delivery
-                                                    </span>
-
-                                                    <span>
-                                                        {offer.delivery_days} days
-                                                    </span>
-
-                                                </div>
-
-                                                <button
-                                                    className="btn btn-outline-primary w-100 mt-2"
-                                                    onClick={() =>
-                                                        navigate(`/jobs/${offer.job_id}`)
-                                                    }
-                                                >
-                                                    View Job
-                                                </button>
+                                                <span className="fw-semibold small">
+                                                    {new Date(
+                                                        offer.created_at
+                                                    ).toLocaleDateString()}
+                                                </span>
 
                                             </div>
+
+                                            <button
+                                                type="button"
+                                                className="btn btn-outline-primary w-100"
+                                                onClick={() =>
+                                                    navigate(
+                                                        `/jobs/${offer.job_id}`
+                                                    )
+                                                }
+                                            >
+                                                <i className="bi bi-eye me-2" />
+                                                View Job
+                                            </button>
 
                                         </div>
 
@@ -156,15 +254,15 @@ function MyOffers() {
 
                                 </div>
 
-                            ))}
+                            </div>
 
-                        </div>
+                        ))}
 
-                    )}
+                    </div>
 
-                </div>
+                )}
 
-            </section>
+            </div>
 
         </div>
     )

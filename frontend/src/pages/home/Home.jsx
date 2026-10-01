@@ -4,128 +4,131 @@ import { getLatestJobs, getCategories } from '../../services/userService'
 
 function Home() {
 
-    const navigate = useNavigate()
+const navigate = useNavigate()
 
-    const [jobs, setJobs] = useState([])
-    const [categories, setCategories] = useState([])
-    const [selectedCategory, setSelectedCategory] = useState('')
+const [jobs, setJobs] = useState([])
+const [categories, setCategories] = useState([])
+const [selectedCategory, setSelectedCategory] = useState('')
 
-    const [loadingJobs, setLoadingJobs] = useState(true)
-    const [loadingCategories, setLoadingCategories] = useState(true)
+const [loadingJobs, setLoadingJobs] = useState(true)
+const [loadingCategories, setLoadingCategories] = useState(true)
 
-    const [jobsError, setJobsError] = useState('')
-    const [categoriesError, setCategoriesError] = useState('')
+const [jobsError, setJobsError] = useState('')
+const [categoriesError, setCategoriesError] = useState('')
 
-    useEffect(() => {
-        // ovdje dohvatamo posljednje objavljene poslove
-        const loadJobs = async () => {
-            try {
-                const response = await getLatestJobs()
+useEffect(() => {
+    // ovdje dohvatamo posljednje objavljene poslove
+    const loadJobs = async () => {
+        try {
+            const response = await getLatestJobs()
 
-                setJobs(response.data)
-            } catch (error) {
-                console.error('LATEST JOBS ERROR:', error)
+            setJobs(response.data)
+        } catch (error) {
+            console.error('LATEST JOBS ERROR:', error)
 
-                setJobsError('Failed to load jobs')
-            } finally {
-                setLoadingJobs(false)
-            }
+            setJobsError('Failed to load jobs')
+        } finally {
+            setLoadingJobs(false)
         }
-
-        loadJobs()
-    }, [])
-
-    useEffect(() => {
-        // ovdje dohvatamo kategorije iz baze
-        const loadCategories = async () => {
-            try {
-                const response = await getCategories()
-
-                setCategories(response.data)
-            } catch (error) {
-                console.error('CATEGORIES ERROR:', error)
-
-                setCategoriesError('Failed to load categories')
-            } finally {
-                setLoadingCategories(false)
-            }
-        }
-
-        loadCategories()
-    }, [])
-
-    // ovdje korisnika šaljemo na poslove odabrane kategorije
-    const handleFindJobs = () => {
-        if (!selectedCategory) {
-            return
-        }
-
-        navigate(`/category-jobs?categoryId=${selectedCategory}`)
     }
 
-    const getTimeAgo = (date) => {
-        const now = new Date()
-        const createdAt = new Date(date)
+    loadJobs()
+}, [])
 
-        const diffInSeconds = Math.floor(
-            (now - createdAt) / 1000
-        )
+useEffect(() => {
+    // ovdje dohvatamo kategorije iz baze
+    const loadCategories = async () => {
+        try {
+            const response = await getCategories()
 
-        if (diffInSeconds < 60) {
-            return 'just now'
+            setCategories(response.data)
+        } catch (error) {
+            console.error('CATEGORIES ERROR:', error)
+
+            setCategoriesError('Failed to load categories')
+        } finally {
+            setLoadingCategories(false)
         }
+    }
 
-        const diffInMinutes = Math.floor(
-            diffInSeconds / 60
-        )
+    loadCategories()
+}, [])
 
-        if (diffInMinutes < 60) {
-            return `${diffInMinutes} ${
-                diffInMinutes === 1 ? 'minute' : 'minutes'
-            } ago`
-        }
+// ovdje korisnika šaljemo na poslove odabrane kategorije
+const handleFindJobs = () => {
+    if (!selectedCategory) {
+        return
+    }
 
-        const diffInHours = Math.floor(
-            diffInMinutes / 60
-        )
+    navigate(`/category-jobs?categoryId=${selectedCategory}`)
+}
 
-        if (diffInHours < 24) {
-            return `${diffInHours} ${
-                diffInHours === 1 ? 'hour' : 'hours'
-            } ago`
-        }
+const getTimeAgo = (date) => {
+    const now = new Date()
+    const createdAt = new Date(date)
 
-        const diffInDays = Math.floor(
-            diffInHours / 24
-        )
+    const diffInSeconds = Math.floor(
+        (now - createdAt) / 1000
+    )
 
-        if (diffInDays < 30) {
-            return `${diffInDays} ${
-                diffInDays === 1 ? 'day' : 'days'
-            } ago`
-        }
+    if (diffInSeconds < 60) {
+        return 'just now'
+    }
 
-        const diffInMonths = Math.floor(
-            diffInDays / 30
-        )
+    const diffInMinutes = Math.floor(
+        diffInSeconds / 60
+    )
 
-        return `${diffInMonths} ${
-            diffInMonths === 1 ? 'month' : 'months'
+    if (diffInMinutes < 60) {
+        return `${diffInMinutes} ${
+            diffInMinutes === 1 ? 'minute' : 'minutes'
         } ago`
     }
 
-    return (
-        <div>
+    const diffInHours = Math.floor(
+        diffInMinutes / 60
+    )
 
-            <section className="bg-primary text-white py-5">
+    if (diffInHours < 24) {
+        return `${diffInHours} ${
+            diffInHours === 1 ? 'hour' : 'hours'
+        } ago`
+    }
+
+    const diffInDays = Math.floor(
+        diffInHours / 24
+    )
+
+    if (diffInDays < 30) {
+        return `${diffInDays} ${
+            diffInDays === 1 ? 'day' : 'days'
+        } ago`
+    }
+
+    const diffInMonths = Math.floor(
+        diffInDays / 30
+    )
+
+    return `${diffInMonths} ${
+        diffInMonths === 1 ? 'month' : 'months'
+    } ago`
+}
+
+return (
+    <div>
+
+        <div className="min-vh-100 d-flex flex-column">
+
+            <section className="bg-primary text-white flex-grow-1 d-flex align-items-center">
+
                 <div className="container py-5">
 
                     <div className="row align-items-center">
 
-                        <div className="col-lg-7">
+                        <div className="col-lg-8">
 
-                            <h1 className="display-4 fw-bold mb-4">
-                                Find the right help for your next task.
+                            <h1 className="display-3 fw-bold mb-4">
+                                Find the right job for your next task.
                             </h1>
 
                             <p className="lead mb-4">
@@ -160,234 +163,86 @@ function Home() {
                     </div>
 
                 </div>
+
             </section>
 
+        </div>
 
-            <section className="py-5">
 
-                <div className="container">
+        <section
+            className="d-flex align-items-center"
+            style={{ minHeight: '50vh' }}
+        >
 
-                    <div className="text-center mb-4">
+            <div className="container py-5">
 
-                        <h2 className="fw-bold">
-                            Find Jobs by Category
-                        </h2>
+                <div className="text-center mb-4">
 
-                        <p className="text-muted mb-0">
-                            Choose a category and find jobs that match your interests
-                        </p>
+                    <h2 className="fw-bold">
+                        Find Jobs by Category
+                    </h2>
 
-                    </div>
-
-                    <div className="row justify-content-center">
-
-                        <div className="col-lg-8">
-
-                            {categoriesError ? (
-
-                                <div className="alert alert-danger text-center">
-                                    {categoriesError}
-                                </div>
-
-                            ) : (
-
-                                <div className="d-flex flex-column flex-sm-row gap-3">
-
-                                    <select
-                                        className="form-select form-select-lg"
-                                        value={selectedCategory}
-                                        onChange={(event) =>
-                                            setSelectedCategory(event.target.value)
-                                        }
-                                        disabled={loadingCategories}
-                                    >
-                                        <option value="">
-                                            {loadingCategories
-                                                ? 'Loading categories...'
-                                                : 'Select a category'}
-                                        </option>
-
-                                        {categories.map((category) => (
-                                            <option
-                                                key={category.id}
-                                                value={category.id}
-                                            >
-                                                {category.name}
-                                            </option>
-                                        ))}
-
-                                    </select>
-
-                                    <button
-                                        className="btn btn-primary btn-lg px-4"
-                                        onClick={handleFindJobs}
-                                        disabled={!selectedCategory}
-                                    >
-                                        Find Jobs
-                                    </button>
-
-                                </div>
-
-                            )}
-
-                        </div>
-
-                    </div>
+                    <p className="text-muted mb-0">
+                        Choose a category and find jobs that match your interests
+                    </p>
 
                 </div>
 
-            </section>
+                <div className="row justify-content-center">
 
+                    <div className="col-lg-8">
 
-            <section className="py-5 bg-light">
+                        {categoriesError ? (
 
-                <div className="container">
-
-                    <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5">
-
-                        <div>
-
-                            <h2 className="fw-bold mb-2">
-                                Latest Jobs
-                            </h2>
-
-                            <p className="text-muted mb-0">
-                                Recently posted jobs from the HelpMe.ba community
-                            </p>
-
-                        </div>
-
-                        <button
-                            className="btn btn-outline-primary mt-3 mt-md-0"
-                            onClick={() =>
-                                navigate('/jobs')
-                            }
-                        >
-                            View All Jobs
-                        </button>
-
-                    </div>
-
-
-                    <div className="row g-4">
-
-                        {loadingJobs ? (
-
-                            <div className="col-12 text-center py-5">
-
-                                <p className="text-muted mb-0">
-                                    Loading jobs...
-                                </p>
-
-                            </div>
-
-                        ) : jobsError ? (
-
-                            <div className="col-12">
-
-                                <div className="alert alert-danger">
-                                    {jobsError}
-                                </div>
-
-                            </div>
-
-                        ) : jobs.length === 0 ? (
-
-                            <div className="col-12 text-center py-5">
-
-                                <p className="text-muted mb-0">
-                                    No jobs available at the moment.
-                                </p>
-
+                            <div className="alert alert-danger text-center">
+                                {categoriesError}
                             </div>
 
                         ) : (
 
-                            jobs.slice(0, 6).map((job) => (
+                            <div className="d-flex flex-column flex-sm-row gap-3">
 
-                                <div
-                                    className="col-md-6 col-xl-4"
-                                    key={job.id}
+                                <select
+                                    className="form-select"
+                                    style={{
+                                        height: '46px',
+                                        color: '#0d6efd',
+                                        borderColor: '#0d6efd',
+                                        backgroundColor: '#f0f7ff'
+                                    }}
+                                    value={selectedCategory}
+                                    onChange={(event) =>
+                                        setSelectedCategory(event.target.value)
+                                    }
+                                    disabled={loadingCategories}
                                 >
+                                    <option value="">
+                                        {loadingCategories
+                                            ? 'Loading categories...'
+                                            : 'Select a category'}
+                                    </option>
 
-                                    <div className="card border-0 shadow-sm h-100">
+                                    {categories.map((category) => (
+                                        <option
+                                            key={category.id}
+                                            value={category.id}
+                                        >
+                                            {category.name}
+                                        </option>
+                                    ))}
 
-                                        <div className="card-body d-flex flex-column">
+                                </select>
 
-                                            <div className="d-flex justify-content-between align-items-start mb-3">
+                                <button
+                                    className="btn btn-primary px-4 text-nowrap"
+                                    style={{ height: '46px' }}
+                                    onClick={handleFindJobs}
+                                    disabled={!selectedCategory}
+                                >
+                                    Find Jobs
+                                </button>
 
-                                                <span className="badge bg-primary">
-                                                    {job.category}
-                                                </span>
-
-                                                <small className="text-muted">
-                                                    {getTimeAgo(
-                                                        job.created_at
-                                                    )}
-                                                </small>
-
-                                            </div>
-
-
-                                            <h5 className="fw-bold mb-3">
-                                                {job.title}
-                                            </h5>
-
-
-                                            <p className="text-muted mb-4">
-                                                {job.description}
-                                            </p>
-
-
-                                            <div className="mt-auto">
-
-                                                <div className="d-flex justify-content-between mb-2">
-
-                                                    <span className="text-muted">
-                                                        Location
-                                                    </span>
-
-                                                    <span className="fw-medium">
-                                                        {job.location ||
-                                                            'Not specified'}
-                                                    </span>
-
-                                                </div>
-
-
-                                                <div className="d-flex justify-content-between mb-3">
-
-                                                    <span className="text-muted">
-                                                        Budget
-                                                    </span>
-
-                                                    <span className="fw-semibold">
-                                                        {job.budget} KM
-                                                    </span>
-
-                                                </div>
-
-
-                                                <button
-                                                    className="btn btn-outline-primary w-100"
-                                                    onClick={() =>
-                                                        navigate(
-                                                            `/jobs/${job.id}`
-                                                        )
-                                                    }
-                                                >
-                                                    View Job
-                                                </button>
-
-                                            </div>
-
-                                        </div>
-
-                                    </div>
-
-                                </div>
-
-                            ))
+                            </div>
 
                         )}
 
@@ -395,145 +250,257 @@ function Home() {
 
                 </div>
 
-            </section>
+            </div>
+
+        </section>
 
 
-            <section className="py-5">
+        <section
+            className="py-5 bg-primary text-white d-flex align-items-center"
+            style={{ minHeight: '70vh' }}
+        >
 
-                <div className="container">
+            <div className="container py-4">
 
-                    <div className="text-center mb-5">
+                <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5">
 
-                        <h2 className="fw-bold">
-                            How HelpMe.ba Works
+                    <div>
+
+                        <h2 className="fw-bold mb-2">
+                            Latest Jobs
                         </h2>
 
-                        <p className="text-muted">
-                            Getting help is simple
+                        <p className="mb-0 text-white-50">
+                            Recently posted jobs from the HelpMe.ba community
                         </p>
 
                     </div>
 
-
-                    <div className="row g-4 text-center">
-
-                        <div className="col-md-4">
-
-                            <div className="p-4">
-
-                                <div className="display-5 fw-bold text-primary mb-3">
-                                    1
-                                </div>
-
-                                <h5 className="fw-bold">
-                                    Post a Job
-                                </h5>
-
-                                <p className="text-muted">
-                                    Describe what you need help with,
-                                    set your budget and provide the
-                                    necessary details.
-                                </p>
-
-                            </div>
-
-                        </div>
-
-
-                        <div className="col-md-4">
-
-                            <div className="p-4">
-
-                                <div className="display-5 fw-bold text-primary mb-3">
-                                    2
-                                </div>
-
-                                <h5 className="fw-bold">
-                                    Receive Offers
-                                </h5>
-
-                                <p className="text-muted">
-                                    People interested in your job can
-                                    send you their offers and proposed
-                                    prices.
-                                </p>
-
-                            </div>
-
-                        </div>
-
-
-                        <div className="col-md-4">
-
-                            <div className="p-4">
-
-                                <div className="display-5 fw-bold text-primary mb-3">
-                                    3
-                                </div>
-
-                                <h5 className="fw-bold">
-                                    Get It Done
-                                </h5>
-
-                                <p className="text-muted">
-                                    Choose the right offer and get your
-                                    task completed.
-                                </p>
-
-                            </div>
-
-                        </div>
-
-                    </div>
+                    <button
+                        className="btn btn-light mt-3 mt-md-0"
+                        onClick={() =>
+                            navigate('/jobs')
+                        }
+                    >
+                        View All Jobs
+                    </button>
 
                 </div>
 
-            </section>
 
+                <div className="row g-4">
 
-            <section className="py-5 bg-primary text-white">
+                    {loadingJobs ? (
 
-                <div className="container">
+                        <div className="col-12 text-center py-5">
 
-                    <div className="row align-items-center">
-
-                        <div className="col-lg-8">
-
-                            <h2 className="fw-bold mb-3">
-                                Ready to get started?
-                            </h2>
-
-                            <p className="lead mb-0">
-                                Post your first job or find an opportunity
-                                to help someone today.
+                            <p className="text-white-50 mb-0">
+                                Loading jobs...
                             </p>
 
                         </div>
 
+                    ) : jobsError ? (
 
-                        <div className="col-lg-4 mt-4 mt-lg-0">
+                        <div className="col-12">
 
-                            <div className="d-flex flex-column flex-sm-row gap-3 justify-content-lg-end">
+                            <div className="alert alert-light text-danger">
+                                {jobsError}
+                            </div>
 
-                                <button
-                                    className="btn btn-light"
-                                    onClick={() =>
-                                        navigate('/jobs/create')
-                                    }
-                                >
-                                    Post a Job
-                                </button>
+                        </div>
 
-                                <button
-                                    className="btn btn-outline-light"
-                                    onClick={() =>
-                                        navigate('/jobs')
-                                    }
-                                >
-                                    Find Jobs
-                                </button>
+                    ) : jobs.length === 0 ? (
+
+                        <div className="col-12 text-center py-5">
+
+                            <p className="text-white-50 mb-0">
+                                No jobs available at the moment.
+                            </p>
+
+                        </div>
+
+                    ) : (
+
+                        jobs.slice(0, 6).map((job) => (
+
+                            <div
+                                className="col-md-6 col-xl-4"
+                                key={job.id}
+                            >
+
+                                <div className="card border-0 shadow-sm h-100">
+
+                                    <div className="card-body d-flex flex-column">
+
+                                        <div className="d-flex justify-content-between align-items-start mb-3">
+
+                                            <span className="badge bg-primary">
+                                                {job.category}
+                                            </span>
+
+                                            <small className="text-muted">
+                                                {getTimeAgo(
+                                                    job.created_at
+                                                )}
+                                            </small>
+
+                                        </div>
+
+
+                                        <h5 className="fw-bold mb-3 text-dark">
+                                            {job.title}
+                                        </h5>
+
+
+                                        <p className="text-secondary mb-4">
+                                            {job.description}
+                                        </p>
+
+
+                                        <div className="mt-auto">
+
+                                            <div className="d-flex justify-content-between mb-2">
+
+                                                <span className="text-muted">
+                                                    Location
+                                                </span>
+
+                                                <span className="fw-medium text-dark text-end">
+                                                    {job.location ||
+                                                        'Not specified'}
+                                                </span>
+
+                                            </div>
+
+
+                                            <div className="d-flex justify-content-between mb-3">
+
+                                                <span className="text-muted">
+                                                    Budget
+                                                </span>
+
+                                                <span className="fw-semibold text-dark">
+                                                    {job.budget} KM
+                                                </span>
+
+                                            </div>
+
+
+                                            <button
+                                                className="btn btn-outline-primary w-100"
+                                                onClick={() =>
+                                                    navigate(
+                                                        `/jobs/${job.id}`
+                                                    )
+                                                }
+                                            >
+                                                View Job
+                                            </button>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
 
                             </div>
+
+                        ))
+
+                    )}
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section
+            className="d-flex align-items-center"
+            style={{ minHeight: '80vh' }}
+        >
+
+            <div className="container py-5">
+
+                <div className="text-center mb-5">
+
+                    <h2 className="fw-bold">
+                        How HelpMe.ba Works
+                    </h2>
+
+                    <p className="text-muted mb-0">
+                        Getting help is simple
+                    </p>
+
+                </div>
+
+
+                <div className="row g-4 text-center">
+
+                    <div className="col-md-4">
+
+                        <div className="p-4">
+
+                            <div className="display-5 fw-bold text-primary mb-3">
+                                1
+                            </div>
+
+                            <h5 className="fw-bold">
+                                Post a Job
+                            </h5>
+
+                            <p className="text-muted">
+                                Describe what you need help with,
+                                set your budget and provide the
+                                necessary details.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div className="col-md-4">
+
+                        <div className="p-4">
+
+                            <div className="display-5 fw-bold text-primary mb-3">
+                                2
+                            </div>
+
+                            <h5 className="fw-bold">
+                                Receive Offers
+                            </h5>
+
+                            <p className="text-muted">
+                                People interested in your job can
+                                send you their offers and proposed
+                                prices.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div className="col-md-4">
+
+                        <div className="p-4">
+
+                            <div className="display-5 fw-bold text-primary mb-3">
+                                3
+                            </div>
+
+                            <h5 className="fw-bold">
+                                Get It Done
+                            </h5>
+
+                            <p className="text-muted">
+                                Choose the right offer and get your
+                                task completed.
+                            </p>
 
                         </div>
 
@@ -541,11 +508,15 @@ function Home() {
 
                 </div>
 
-            </section>
+            </div>
 
-        </div>
-    )
+        </section>
+
+    </div>
+)
+
 }
 
 export default Home
+
 

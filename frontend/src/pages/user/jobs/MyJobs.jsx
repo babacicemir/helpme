@@ -14,6 +14,7 @@ function MyJobs() {
 
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
+    const [successMessage, setSuccessMessage] = useState('')
 
     const [selectedJob, setSelectedJob] = useState(null)
     const [deleting, setDeleting] = useState(false)
@@ -67,6 +68,7 @@ function MyJobs() {
 
     const openJobModal = (job) => {
         setSelectedJob(job)
+        setSuccessMessage('')
     }
 
     const closeJobModal = () => {
@@ -91,7 +93,6 @@ function MyJobs() {
         setDeadline('')
         setLocation('')
         setCreateError('')
-
         setShowCreateModal(true)
     }
 
@@ -122,6 +123,7 @@ function MyJobs() {
         try {
             setCreatingJob(true)
             setCreateError('')
+            setError('')
 
             const response = await createJob(
                 categoryId,
@@ -145,6 +147,8 @@ function MyJobs() {
             setBudget('')
             setDeadline('')
             setLocation('')
+
+            setSuccessMessage('Job created successfully')
         } catch (error) {
             console.error('CREATE JOB ERROR:', error)
 
@@ -217,6 +221,7 @@ function MyJobs() {
         try {
             setUpdatingJob(true)
             setUpdateError('')
+            setError('')
 
             const response = await updateJob(
                 selectedJob.id,
@@ -238,6 +243,7 @@ function MyJobs() {
 
             setSelectedJob(response.data)
             setShowUpdateModal(false)
+            setSuccessMessage('Job updated successfully')
         } catch (error) {
             console.error('UPDATE JOB ERROR:', error)
 
@@ -266,6 +272,7 @@ function MyJobs() {
         try {
             setDeleting(true)
             setError('')
+            setSuccessMessage('')
 
             await deleteJob(selectedJob.id)
 
@@ -276,6 +283,7 @@ function MyJobs() {
             )
 
             setSelectedJob(null)
+            setSuccessMessage('Job deleted successfully')
         } catch (error) {
             console.error('DELETE JOB ERROR:', error)
 
@@ -288,150 +296,348 @@ function MyJobs() {
         }
     }
 
+    const getStatusClass = (status) => {
+        if (status === 'OPEN') {
+            return 'bg-success bg-opacity-10 text-success'
+        }
+
+        if (status === 'COMPLETED') {
+            return 'bg-primary bg-opacity-10 text-primary'
+        }
+
+        if (status === 'CANCELLED') {
+            return 'bg-danger bg-opacity-10 text-danger'
+        }
+
+        return 'bg-secondary bg-opacity-10 text-secondary'
+    }
+
     if (loading) {
         return (
-            <div className="container py-5">
-                <div className="text-center">
-                    <p className="mb-0">
-                        Loading your jobs...
-                    </p>
+            <div className="bg-light min-vh-100 py-5">
+
+                <div className="container">
+
+                    <div className="card border-0 shadow-sm">
+
+                        <div className="card-body text-center py-5">
+
+                            <div
+                                className="spinner-border text-primary mb-3"
+                                role="status"
+                            >
+                                <span className="visually-hidden">
+                                    Loading...
+                                </span>
+                            </div>
+
+                            <p className="text-muted mb-0">
+                                Loading your jobs...
+                            </p>
+
+                        </div>
+
+                    </div>
+
                 </div>
+
             </div>
         )
     }
 
     return (
-        <div className="container py-5">
-            <div className="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h2 className="fw-bold mb-1">
-                        My Jobs
-                    </h2>
+        <div className="bg-light min-vh-100 py-5">
 
-                    <p className="text-muted mb-0">
-                        Manage the jobs you have created.
-                    </p>
+            <div className="container">
+
+                <div className="mb-5">
+
+                    <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3">
+
+                        <div>
+
+                            <p className="text-primary fw-semibold mb-2">
+                                Your activity
+                            </p>
+
+                            <h1 className="fw-bold mb-2">
+                                My Jobs
+                            </h1>
+
+                            <p className="text-muted mb-0">
+                                Manage the jobs you have created.
+                            </p>
+
+                        </div>
+
+                        <div className="d-flex align-items-center gap-3">
+
+                            <div className="bg-white rounded-3 shadow-sm px-4 py-3">
+
+                                <div className="d-flex align-items-center gap-3">
+
+                                    <div
+                                        className="bg-primary text-white rounded-3 d-flex align-items-center justify-content-center"
+                                        style={{
+                                            width: '44px',
+                                            height: '44px'
+                                        }}
+                                    >
+                                        <i className="bi bi-briefcase fs-5" />
+                                    </div>
+
+                                    <div>
+
+                                        <small className="text-muted d-block">
+                                            Total Jobs
+                                        </small>
+
+                                        <span className="fw-bold fs-5">
+                                            {jobs.length}
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <button
+                                type="button"
+                                className="btn btn-primary px-4"
+                                onClick={openCreateModal}
+                            >
+                                <i className="bi bi-plus-lg me-2" />
+                                Create Job
+                            </button>
+
+                        </div>
+
+                    </div>
+
                 </div>
 
-                <button
-                    type="button"
-                    className="btn btn-primary"
-                    onClick={openCreateModal}
-                >
-                    + Create Job
-                </button>
-            </div>
+                {successMessage && (
+                    <div className="alert alert-success border-0 shadow-sm d-flex align-items-center">
+                        <i className="bi bi-check-circle-fill me-2" />
+                        {successMessage}
+                    </div>
+                )}
 
-            {error && (
-                <div
-                    className="alert alert-danger"
-                    role="alert"
-                >
-                    {error}
-                </div>
-            )}
+                {error && (
+                    <div className="alert alert-danger border-0 shadow-sm d-flex align-items-center">
+                        <i className="bi bi-exclamation-circle-fill me-2" />
+                        {error}
+                    </div>
+                )}
 
-            {jobs.length === 0 ? (
-                <div className="text-center py-5">
-                    <h4 className="fw-bold">
-                        Ouuppss! You didn't create any jobs yet.
-                    </h4>
+                {jobs.length === 0 ? (
 
-                    <p className="text-muted">
-                        Create your first job and find someone
-                        to help you.
-                    </p>
-                </div>
-            ) : (
-                <div className="row g-4">
-                    {jobs.map((job) => (
-                        <div
-                            className="col-12 col-md-6"
-                            key={job.id}
-                        >
-                            <div className="card h-100 shadow-sm border-0">
-                                <div className="card-body d-flex flex-column">
-                                    <div className="d-flex justify-content-between align-items-start mb-3">
-                                        <h5 className="card-title fw-bold mb-0">
+                    <div className="card border-0 shadow-sm">
+
+                        <div className="card-body text-center py-5">
+
+                            <div
+                                className="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3"
+                                style={{
+                                    width: '70px',
+                                    height: '70px'
+                                }}
+                            >
+                                <i className="bi bi-briefcase fs-3" />
+                            </div>
+
+                            <h4 className="fw-bold mb-2">
+                                You haven't created any jobs yet
+                            </h4>
+
+                            <p className="text-muted mb-4">
+                                Create your first job and find someone
+                                to help you.
+                            </p>
+
+                            <button
+                                type="button"
+                                className="btn btn-primary"
+                                onClick={openCreateModal}
+                            >
+                                <i className="bi bi-plus-lg me-2" />
+                                Create Your First Job
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                ) : (
+
+                    <div className="row g-4">
+
+                        {jobs.map((job) => (
+
+                            <div
+                                className="col-12 col-md-6"
+                                key={job.id}
+                            >
+
+                                <div
+                                    className="card h-100 border-0 shadow-sm"
+                                    style={{
+                                        borderRadius: '14px'
+                                    }}
+                                >
+
+                                    <div className="card-body p-4 d-flex flex-column">
+
+                                        <div className="d-flex justify-content-between align-items-start mb-3">
+
+                                            <div
+                                                className="bg-primary bg-opacity-10 text-primary rounded-3 d-flex align-items-center justify-content-center"
+                                                style={{
+                                                    width: '44px',
+                                                    height: '44px'
+                                                }}
+                                            >
+                                                <i className="bi bi-briefcase fs-5" />
+                                            </div>
+
+                                            <span
+                                                className={`badge px-3 py-2 ${getStatusClass(
+                                                    job.status
+                                                )}`}
+                                            >
+                                                {job.status}
+                                            </span>
+
+                                        </div>
+
+                                        <h5 className="fw-bold mb-2">
                                             {job.title}
                                         </h5>
 
-                                        <span className="badge bg-primary">
-                                            {job.status}
-                                        </span>
-                                    </div>
+                                        <p className="text-muted mb-4">
+                                            {job.description}
+                                        </p>
 
-                                    <p className="card-text text-muted">
-                                        {job.description}
-                                    </p>
+                                        <div className="border-top pt-3 mt-auto">
 
-                                    <div className="mt-auto">
-                                        <div className="row mb-3">
-                                            <div className="col-6">
-                                                <small className="text-muted d-block">
-                                                    Budget
-                                                </small>
+                                            <div className="row g-3 mb-4">
 
-                                                <strong>
-                                                    {job.budget} KM
-                                                </strong>
+                                                <div className="col-6">
+
+                                                    <small className="text-muted d-block mb-1">
+                                                        <i className="bi bi-cash me-1" />
+                                                        Budget
+                                                    </small>
+
+                                                    <strong className="text-primary">
+                                                        {job.budget} KM
+                                                    </strong>
+
+                                                </div>
+
+                                                <div className="col-6">
+
+                                                    <small className="text-muted d-block mb-1">
+                                                        <i className="bi bi-geo-alt me-1" />
+                                                        Location
+                                                    </small>
+
+                                                    <strong>
+                                                        {job.location}
+                                                    </strong>
+
+                                                </div>
+
                                             </div>
 
-                                            <div className="col-6">
-                                                <small className="text-muted d-block">
-                                                    Location
-                                                </small>
+                                            <div className="d-flex gap-2">
 
-                                                <strong>
-                                                    {job.location}
-                                                </strong>
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-primary flex-fill"
+                                                    onClick={() =>
+                                                        openJobModal(job)
+                                                    }
+                                                >
+                                                    <i className="bi bi-eye me-1" />
+                                                    View
+                                                </button>
+
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-outline-primary flex-fill"
+                                                    onClick={() =>
+                                                        openOffersModal(job)
+                                                    }
+                                                >
+                                                    <i className="bi bi-chat-square-text me-1" />
+                                                    Offers
+                                                </button>
+
                                             </div>
+
                                         </div>
 
-                                        <div className="d-flex gap-2">
-                                            <button
-                                                type="button"
-                                                className="btn btn-primary flex-fill"
-                                                onClick={() =>
-                                                    openJobModal(job)
-                                                }
-                                            >
-                                                View
-                                            </button>
-
-                                            <button
-                                                type="button"
-                                                className="btn btn-outline-primary flex-fill"
-                                                onClick={() =>
-                                                    openOffersModal(job)
-                                                }
-                                            >
-                                                Offers
-                                            </button>
-                                        </div>
                                     </div>
+
                                 </div>
+
                             </div>
-                        </div>
-                    ))}
-                </div>
-            )}
+
+                        ))}
+
+                    </div>
+
+                )}
+
+            </div>
 
             {selectedJob && !showUpdateModal && (
+
                 <>
                     <div
                         className="modal fade show d-block"
                         tabIndex="-1"
                         role="dialog"
                         aria-modal="true"
-                        style={{ zIndex: 1050 }}
+                        style={{
+                            zIndex: 1050,
+                            backgroundColor: 'rgba(0, 0, 0, 0.55)'
+                        }}
                     >
+
                         <div className="modal-dialog modal-lg modal-dialog-centered">
-                            <div className="modal-content">
-                                <div className="modal-header">
-                                    <h5 className="modal-title fw-bold">
-                                        {selectedJob.title}
-                                    </h5>
+
+                            <div className="modal-content border-0 shadow-lg">
+
+                                <div className="modal-header px-4 py-3">
+
+                                    <div className="d-flex align-items-center">
+
+                                        <div
+                                            className="bg-primary text-white rounded-3 d-flex align-items-center justify-content-center me-3"
+                                            style={{
+                                                width: '46px',
+                                                height: '46px'
+                                            }}
+                                        >
+                                            <i className="bi bi-briefcase fs-5" />
+                                        </div>
+
+                                        <div>
+
+                                            <h5 className="modal-title fw-bold mb-1">
+                                                {selectedJob.title}
+                                            </h5>
+
+                                            <small className="text-muted">
+                                                Job details
+                                            </small>
+
+                                        </div>
+
+                                    </div>
 
                                     <button
                                         type="button"
@@ -439,47 +645,83 @@ function MyJobs() {
                                         onClick={closeJobModal}
                                         aria-label="Close"
                                     />
+
                                 </div>
 
-                                <div className="modal-body">
-                                    <div className="mb-4">
-                                        <h6 className="fw-bold">
-                                            Description
-                                        </h6>
+                                <div className="modal-body px-4 py-4">
+
+                                    <div className="d-flex flex-wrap gap-2 mb-4">
+
+                                        <span
+                                            className={`badge px-3 py-2 ${getStatusClass(
+                                                selectedJob.status
+                                            )}`}
+                                        >
+                                            {selectedJob.status}
+                                        </span>
+
+                                    </div>
+
+                                    <div className="bg-light rounded-3 p-4 mb-4">
+
+                                        <div className="d-flex align-items-center mb-2">
+
+                                            <i className="bi bi-card-text text-primary me-2" />
+
+                                            <h6 className="fw-bold mb-0">
+                                                Description
+                                            </h6>
+
+                                        </div>
 
                                         <p className="text-muted mb-0">
                                             {selectedJob.description}
                                         </p>
+
                                     </div>
 
                                     <div className="row g-3">
-                                        <div className="col-12 col-md-6">
-                                            <div className="border rounded p-3">
-                                                <small className="text-muted d-block">
+
+                                        <div className="col-md-6">
+
+                                            <div className="bg-light rounded-3 p-3 h-100">
+
+                                                <small className="text-muted d-block mb-2">
+                                                    <i className="bi bi-cash text-primary me-1" />
                                                     Budget
                                                 </small>
 
-                                                <strong>
+                                                <strong className="text-primary">
                                                     {selectedJob.budget} KM
                                                 </strong>
+
                                             </div>
+
                                         </div>
 
-                                        <div className="col-12 col-md-6">
-                                            <div className="border rounded p-3">
-                                                <small className="text-muted d-block">
+                                        <div className="col-md-6">
+
+                                            <div className="bg-light rounded-3 p-3 h-100">
+
+                                                <small className="text-muted d-block mb-2">
+                                                    <i className="bi bi-geo-alt text-primary me-1" />
                                                     Location
                                                 </small>
 
                                                 <strong>
                                                     {selectedJob.location}
                                                 </strong>
+
                                             </div>
+
                                         </div>
 
-                                        <div className="col-12 col-md-6">
-                                            <div className="border rounded p-3">
-                                                <small className="text-muted d-block">
+                                        <div className="col-md-6">
+
+                                            <div className="bg-light rounded-3 p-3 h-100">
+
+                                                <small className="text-muted d-block mb-2">
+                                                    <i className="bi bi-calendar-event text-primary me-1" />
                                                     Deadline
                                                 </small>
 
@@ -490,24 +732,34 @@ function MyJobs() {
                                                         ).toLocaleDateString()
                                                         : 'Not specified'}
                                                 </strong>
+
                                             </div>
+
                                         </div>
 
-                                        <div className="col-12 col-md-6">
-                                            <div className="border rounded p-3">
-                                                <small className="text-muted d-block">
+                                        <div className="col-md-6">
+
+                                            <div className="bg-light rounded-3 p-3 h-100">
+
+                                                <small className="text-muted d-block mb-2">
+                                                    <i className="bi bi-info-circle text-primary me-1" />
                                                     Status
                                                 </small>
 
                                                 <strong>
                                                     {selectedJob.status}
                                                 </strong>
+
                                             </div>
+
                                         </div>
 
                                         <div className="col-12">
-                                            <div className="border rounded p-3">
-                                                <small className="text-muted d-block">
+
+                                            <div className="bg-light rounded-3 p-3">
+
+                                                <small className="text-muted d-block mb-2">
+                                                    <i className="bi bi-calendar-plus text-primary me-1" />
                                                     Created
                                                 </small>
 
@@ -518,17 +770,23 @@ function MyJobs() {
                                                         ).toLocaleDateString()
                                                         : 'Not specified'}
                                                 </strong>
+
                                             </div>
+
                                         </div>
+
                                     </div>
+
                                 </div>
 
-                                <div className="modal-footer">
+                                <div className="modal-footer px-4 py-3">
+
                                     <button
                                         type="button"
-                                        className="btn btn-warning"
+                                        className="btn btn-outline-primary"
                                         onClick={openUpdateModal}
                                     >
+                                        <i className="bi bi-pencil me-1" />
                                         Update
                                     </button>
 
@@ -538,6 +796,8 @@ function MyJobs() {
                                         onClick={handleDelete}
                                         disabled={deleting}
                                     >
+                                        <i className="bi bi-trash me-1" />
+
                                         {deleting
                                             ? 'Deleting...'
                                             : 'Delete'}
@@ -550,16 +810,14 @@ function MyJobs() {
                                     >
                                         Close
                                     </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div
-                        className="modal-backdrop fade show"
-                        style={{ zIndex: 1040 }}
-                        onClick={closeJobModal}
-                    />
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
                 </>
             )}
 
@@ -571,21 +829,52 @@ function MyJobs() {
             )}
 
             {showCreateModal && (
+
                 <>
                     <div
                         className="modal fade show d-block"
                         tabIndex="-1"
                         role="dialog"
                         aria-modal="true"
-                        style={{ zIndex: 1050 }}
+                        style={{
+                            zIndex: 1050,
+                            backgroundColor: 'rgba(0, 0, 0, 0.55)'
+                        }}
                     >
+
                         <div className="modal-dialog modal-lg modal-dialog-centered">
-                            <div className="modal-content">
+
+                            <div className="modal-content border-0 shadow-lg">
+
                                 <form onSubmit={handleCreateJob}>
-                                    <div className="modal-header">
-                                        <h5 className="modal-title fw-bold">
-                                            Create Job
-                                        </h5>
+
+                                    <div className="modal-header px-4 py-3">
+
+                                        <div className="d-flex align-items-center">
+
+                                            <div
+                                                className="bg-primary text-white rounded-3 d-flex align-items-center justify-content-center me-3"
+                                                style={{
+                                                    width: '46px',
+                                                    height: '46px'
+                                                }}
+                                            >
+                                                <i className="bi bi-plus-lg fs-5" />
+                                            </div>
+
+                                            <div>
+
+                                                <h5 className="modal-title fw-bold mb-1">
+                                                    Create Job
+                                                </h5>
+
+                                                <small className="text-muted">
+                                                    Create a new job request
+                                                </small>
+
+                                            </div>
+
+                                        </div>
 
                                         <button
                                             type="button"
@@ -594,22 +883,23 @@ function MyJobs() {
                                             disabled={creatingJob}
                                             aria-label="Close"
                                         />
+
                                     </div>
 
-                                    <div className="modal-body">
+                                    <div className="modal-body px-4 py-4">
+
                                         {createError && (
-                                            <div
-                                                className="alert alert-danger"
-                                                role="alert"
-                                            >
+                                            <div className="alert alert-danger border-0">
+                                                <i className="bi bi-exclamation-circle me-2" />
                                                 {createError}
                                             </div>
                                         )}
 
                                         <div className="mb-3">
+
                                             <label
                                                 htmlFor="jobTitle"
-                                                className="form-label"
+                                                className="form-label fw-semibold"
                                             >
                                                 Title
                                             </label>
@@ -627,12 +917,14 @@ function MyJobs() {
                                                 placeholder="Enter job title"
                                                 disabled={creatingJob}
                                             />
+
                                         </div>
 
                                         <div className="mb-3">
+
                                             <label
                                                 htmlFor="jobDescription"
-                                                className="form-label"
+                                                className="form-label fw-semibold"
                                             >
                                                 Description
                                             </label>
@@ -650,12 +942,14 @@ function MyJobs() {
                                                 placeholder="Describe what you need help with"
                                                 disabled={creatingJob}
                                             />
+
                                         </div>
 
                                         <div className="mb-3">
+
                                             <label
                                                 htmlFor="jobCategory"
-                                                className="form-label"
+                                                className="form-label fw-semibold"
                                             >
                                                 Category
                                             </label>
@@ -671,28 +965,35 @@ function MyJobs() {
                                                 }
                                                 disabled={creatingJob}
                                             >
+
                                                 <option value="">
                                                     Select a category
                                                 </option>
 
                                                 {categories.map(
                                                     (category) => (
+
                                                         <option
                                                             key={category.id}
                                                             value={category.id}
                                                         >
                                                             {category.name}
                                                         </option>
+
                                                     )
                                                 )}
+
                                             </select>
+
                                         </div>
 
                                         <div className="row">
-                                            <div className="col-12 col-md-6 mb-3">
+
+                                            <div className="col-md-6 mb-3">
+
                                                 <label
                                                     htmlFor="jobBudget"
-                                                    className="form-label"
+                                                    className="form-label fw-semibold"
                                                 >
                                                     Budget (KM)
                                                 </label>
@@ -712,12 +1013,14 @@ function MyJobs() {
                                                     step="0.01"
                                                     disabled={creatingJob}
                                                 />
+
                                             </div>
 
-                                            <div className="col-12 col-md-6 mb-3">
+                                            <div className="col-md-6 mb-3">
+
                                                 <label
                                                     htmlFor="jobDeadline"
-                                                    className="form-label"
+                                                    className="form-label fw-semibold"
                                                 >
                                                     Deadline
                                                 </label>
@@ -734,13 +1037,16 @@ function MyJobs() {
                                                     }
                                                     disabled={creatingJob}
                                                 />
+
                                             </div>
+
                                         </div>
 
                                         <div className="mb-3">
+
                                             <label
                                                 htmlFor="jobLocation"
-                                                className="form-label"
+                                                className="form-label fw-semibold"
                                             >
                                                 Location
                                             </label>
@@ -758,10 +1064,13 @@ function MyJobs() {
                                                 placeholder="Enter location"
                                                 disabled={creatingJob}
                                             />
+
                                         </div>
+
                                     </div>
 
-                                    <div className="modal-footer">
+                                    <div className="modal-footer px-4 py-3">
+
                                         <button
                                             type="button"
                                             className="btn btn-secondary"
@@ -773,43 +1082,75 @@ function MyJobs() {
 
                                         <button
                                             type="submit"
-                                            className="btn btn-primary"
+                                            className="btn btn-primary px-4"
                                             disabled={creatingJob}
                                         >
+                                            <i className="bi bi-plus-lg me-1" />
+
                                             {creatingJob
                                                 ? 'Creating...'
                                                 : 'Create Job'}
                                         </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div
-                        className="modal-backdrop fade show"
-                        style={{ zIndex: 1040 }}
-                        onClick={closeCreateModal}
-                    />
+                                    </div>
+
+                                </form>
+
+                            </div>
+
+                        </div>
+
+                    </div>
                 </>
             )}
 
             {showUpdateModal && selectedJob && (
+
                 <>
                     <div
                         className="modal fade show d-block"
                         tabIndex="-1"
                         role="dialog"
                         aria-modal="true"
-                        style={{ zIndex: 1050 }}
+                        style={{
+                            zIndex: 1050,
+                            backgroundColor: 'rgba(0, 0, 0, 0.55)'
+                        }}
                     >
+
                         <div className="modal-dialog modal-lg modal-dialog-centered">
-                            <div className="modal-content">
+
+                            <div className="modal-content border-0 shadow-lg">
+
                                 <form onSubmit={handleUpdateJob}>
-                                    <div className="modal-header">
-                                        <h5 className="modal-title fw-bold">
-                                            Update Job
-                                        </h5>
+
+                                    <div className="modal-header px-4 py-3">
+
+                                        <div className="d-flex align-items-center">
+
+                                            <div
+                                                className="bg-primary text-white rounded-3 d-flex align-items-center justify-content-center me-3"
+                                                style={{
+                                                    width: '46px',
+                                                    height: '46px'
+                                                }}
+                                            >
+                                                <i className="bi bi-pencil fs-5" />
+                                            </div>
+
+                                            <div>
+
+                                                <h5 className="modal-title fw-bold mb-1">
+                                                    Update Job
+                                                </h5>
+
+                                                <small className="text-muted">
+                                                    Update your job information
+                                                </small>
+
+                                            </div>
+
+                                        </div>
 
                                         <button
                                             type="button"
@@ -818,22 +1159,23 @@ function MyJobs() {
                                             disabled={updatingJob}
                                             aria-label="Close"
                                         />
+
                                     </div>
 
-                                    <div className="modal-body">
+                                    <div className="modal-body px-4 py-4">
+
                                         {updateError && (
-                                            <div
-                                                className="alert alert-danger"
-                                                role="alert"
-                                            >
+                                            <div className="alert alert-danger border-0">
+                                                <i className="bi bi-exclamation-circle me-2" />
                                                 {updateError}
                                             </div>
                                         )}
 
                                         <div className="mb-3">
+
                                             <label
                                                 htmlFor="updateJobTitle"
-                                                className="form-label"
+                                                className="form-label fw-semibold"
                                             >
                                                 Title
                                             </label>
@@ -850,12 +1192,14 @@ function MyJobs() {
                                                 }
                                                 disabled={updatingJob}
                                             />
+
                                         </div>
 
                                         <div className="mb-3">
+
                                             <label
                                                 htmlFor="updateJobDescription"
-                                                className="form-label"
+                                                className="form-label fw-semibold"
                                             >
                                                 Description
                                             </label>
@@ -872,12 +1216,14 @@ function MyJobs() {
                                                 }
                                                 disabled={updatingJob}
                                             />
+
                                         </div>
 
                                         <div className="mb-3">
+
                                             <label
                                                 htmlFor="updateJobCategory"
-                                                className="form-label"
+                                                className="form-label fw-semibold"
                                             >
                                                 Category
                                             </label>
@@ -893,28 +1239,35 @@ function MyJobs() {
                                                 }
                                                 disabled={updatingJob}
                                             >
+
                                                 <option value="">
                                                     Select a category
                                                 </option>
 
                                                 {categories.map(
                                                     (category) => (
+
                                                         <option
                                                             key={category.id}
                                                             value={category.id}
                                                         >
                                                             {category.name}
                                                         </option>
+
                                                     )
                                                 )}
+
                                             </select>
+
                                         </div>
 
                                         <div className="row">
-                                            <div className="col-12 col-md-6 mb-3">
+
+                                            <div className="col-md-6 mb-3">
+
                                                 <label
                                                     htmlFor="updateJobBudget"
-                                                    className="form-label"
+                                                    className="form-label fw-semibold"
                                                 >
                                                     Budget (KM)
                                                 </label>
@@ -933,12 +1286,14 @@ function MyJobs() {
                                                     step="0.01"
                                                     disabled={updatingJob}
                                                 />
+
                                             </div>
 
-                                            <div className="col-12 col-md-6 mb-3">
+                                            <div className="col-md-6 mb-3">
+
                                                 <label
                                                     htmlFor="updateJobDeadline"
-                                                    className="form-label"
+                                                    className="form-label fw-semibold"
                                                 >
                                                     Deadline
                                                 </label>
@@ -955,13 +1310,16 @@ function MyJobs() {
                                                     }
                                                     disabled={updatingJob}
                                                 />
+
                                             </div>
+
                                         </div>
 
                                         <div className="mb-3">
+
                                             <label
                                                 htmlFor="updateJobLocation"
-                                                className="form-label"
+                                                className="form-label fw-semibold"
                                             >
                                                 Location
                                             </label>
@@ -978,10 +1336,13 @@ function MyJobs() {
                                                 }
                                                 disabled={updatingJob}
                                             />
+
                                         </div>
+
                                     </div>
 
-                                    <div className="modal-footer">
+                                    <div className="modal-footer px-4 py-3">
+
                                         <button
                                             type="button"
                                             className="btn btn-secondary"
@@ -993,26 +1354,28 @@ function MyJobs() {
 
                                         <button
                                             type="submit"
-                                            className="btn btn-primary"
+                                            className="btn btn-primary px-4"
                                             disabled={updatingJob}
                                         >
+                                            <i className="bi bi-check-lg me-1" />
+
                                             {updatingJob
                                                 ? 'Updating...'
                                                 : 'Update Job'}
                                         </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div
-                        className="modal-backdrop fade show"
-                        style={{ zIndex: 1040 }}
-                        onClick={closeUpdateModal}
-                    />
+                                    </div>
+
+                                </form>
+
+                            </div>
+
+                        </div>
+
+                    </div>
                 </>
             )}
+
         </div>
     )
 }
